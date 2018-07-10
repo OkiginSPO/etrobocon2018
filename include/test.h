@@ -8,6 +8,9 @@
 #include "GyroSensor.h"
 #include "Motor.h"
 #include "Clock.h"
+#include "walker.h"
+#include "SelfLocalization.h"
+#include "Distance.h"
 
 using namespace ev3api;
 
@@ -19,6 +22,13 @@ class Test
 
     //
     void start();
+
+  private:
+    Walker walker;
+    SelfLocalization sl;
+    Clock clock;
+    Distance distance;
+    int32_t distance_total;
 };
 
 #endif

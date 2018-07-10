@@ -1,5 +1,9 @@
 APPL_COBJS += 
-APPL_CXXOBJS += test.o
+APPL_CXXOBJS += test.o \
+  common.o \
+  walker.o \
+  SelfLocalization.o \
+  Distance.o
 
 SRCLANG := c++
 
