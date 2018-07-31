@@ -27,19 +27,24 @@ void Test::start()
     sprintf(msg, "positionX:%d", (int)sl.getPointX());
     msg_f(msg, 5);
 
+    // 現在の走行距離を取得する。
     distance_total = distance.getDistanceTotal(walker.getCountL(), walker.getCountR());
 
+    // 走行距離をディスプレイに表示する。
     sprintf(msg, "distance:%d", (int)distance_total);
     msg_f(msg, 3);
 
+    // PID値を調整？
     sl.update(walker.getCountL(), walker.getCountR());
     sprintf(msg, "1distance:%d", (int)distance_total);
     msg_f(msg, 3);
 
+    // PWM値を10で、0(直進)する。
     walker.run(10, 0);
     sprintf(msg, "2distance:%d, R:%d, L:%d", (int)distance_total, (int)walker.getCountR(), (int)walker.getCountL());
     msg_f(msg, 3);
 
+    // 現在の走行距離が1000(100cm)だった場合は、ループを抜ける。
     if (distance_total > 1000) {
       break;
     }

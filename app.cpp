@@ -9,6 +9,7 @@
 #include "ev3api.h"
 #include "app.h"
 #include "common.h"
+
 #include "test.h"
 
 #define DEBUG
@@ -32,8 +33,8 @@ void main_task(intptr_t unused)
   /* Bluetooth 通信タスクの軌道 */
   act_tsk(BT_TASK);
 
-  Test testapp;
-  testapp.start();
+  Test test;
+  test.start();
 
   ter_tsk(BT_TASK);
   fclose(bt);
