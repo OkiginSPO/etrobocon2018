@@ -3,7 +3,6 @@
  * @brief 駐車クラス
  * @author Keisuke MORI
  */
-
 #include "Parking.h"
 
 Parking::Parking():
