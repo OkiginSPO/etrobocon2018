@@ -1,0 +1,4 @@
+make img=<folder>
+make app=<folder>
+make upload [ip=<ev3_ip_address>] [from=<local_file_name>] [to=<remote_file_name>]
+make uploadimg [ip=<ev3_ip_address>] [from=<local_image_path>]
