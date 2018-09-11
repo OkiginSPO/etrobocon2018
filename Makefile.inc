@@ -13,6 +13,7 @@ INCLUDES += -I$(app_path)test
 
 APPL_COBJS += 
 APPL_CXXOBJS += test.o \
+  bluetoothTest.o \
   Bluetooth.o \
   common.o \
   walker.o \

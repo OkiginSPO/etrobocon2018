@@ -12,8 +12,6 @@ class Bluetooth
   public:
     // コンストラクタ
     Bluetooth();
-    // Bluetoothテスト
-    void test(FILE* bt);
     // Bluetoothから値をdijkstraData配列にセット
     void fetchDijkstraData(FILE* bt);
     int8_t dijkstraData[DIJKSTRA_ARRAY_BYTE];
@@ -21,7 +19,6 @@ class Bluetooth
   private:
     char sendCmd;
     char recvData[DIJKSTRA_ARRAY_BYTE+1];
-    char msg[DIJKSTRA_ARRAY_BYTE];
 };
 
 #endif
