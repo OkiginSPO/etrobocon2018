@@ -8,7 +8,7 @@ class Localization
     public:
         explicit Localization(const MotorWheel *_leftWheel, const MotorWheel *_rightWheel);
         ~Localization();
-        float GetDistance();
+        float GetDistance(void);
         
     private:
         const MotorWheel *leftWheel;

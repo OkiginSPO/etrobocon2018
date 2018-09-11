@@ -8,8 +8,8 @@ class ColorSensorController
     public:
         explicit ColorSensorController(sensor_port_t _port);
         ~ColorSensorController();
-        int GetBrightness();
-        rgb_raw_t GetRawRGB();
+        int GetBrightness(void);
+        rgb_raw_t GetRawRGB(void);
         
     private:
         sensor_port_t sensor_port;

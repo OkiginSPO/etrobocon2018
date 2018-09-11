@@ -8,12 +8,12 @@ class MotorWheel
 public:
     explicit MotorWheel(motor_port_t _motor_port);
     ~MotorWheel();
-    void Initialize();
+    void Initialize(void);
     void Run(int pwm);
     void Stop(bool _brake);
-    void UpdateDistance();
-    float GetDistanceDelta() const;
-    float GetDistanceTotal() const;
+    void UpdateDistance(void);
+    float GetDistanceDelta(void) const;
+    float GetDistanceTotal(void) const;
     
 private:
     motor_port_t motor_port;

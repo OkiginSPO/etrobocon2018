@@ -1,10 +1,10 @@
 #include "PIDController.h"
 
-PIDController::PIDController(float _dt):
-    delta_t(_dt),
-    kp(0.0F), ki(0.0F), kd(0.0F),
-    integral(0.0F),
-    diff{0.0F, 0.0F}
+PIDController::PIDController(float _dt)
+    : delta_t(_dt)
+    , kp(0.0F), ki(0.0F), kd(0.0F)
+    , integral(0.0F)
+    , diff{0.0F, 0.0F}
 {
     
 }
@@ -14,14 +14,14 @@ PIDController::~PIDController()
     
 }
 
-PIDController::SetGain(const PIDParam *param)
+void PIDController::SetGain(const PIDParam *param)
 {
     kp = param->P;
     ki = param->I;
     kd = param->D;
 }
 
-PIDController::Reset()
+void PIDController::Reset(void)
 {
     diff[0] = 0.0;
     diff[1] = 0.0;

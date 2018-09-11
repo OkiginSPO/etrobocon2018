@@ -9,7 +9,7 @@ class PIDController
         PIDController(float _dt);
         ~PIDController();
         void SetGain(const PIDParam *param);
-        void Reset();
+        void Reset(void);
         float GetOperationAmount(float measured_val, float target_val);
         
     private:
