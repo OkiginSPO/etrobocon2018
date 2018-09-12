@@ -7,4 +7,21 @@
         <activeConfTypeElem>0</activeConfTypeElem>
         <activeConfIndexElem>0</activeConfIndexElem>
     </data>
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/C:/cygwin64/tmp/ev3rt-beta7-2-release/hrp2/sdk/workspace/etrobocon2018-feat-R_Parking/src/Common/TurnControl.cpp</file>
+            <file>file:/C:/cygwin64/tmp/ev3rt-beta7-2-release/hrp2/sdk/workspace/etrobocon2018-feat-R_Parking/src/Common/Direction.cpp</file>
+            <file>file:/C:/cygwin64/tmp/ev3rt-beta7-2-release/hrp2/sdk/workspace/etrobocon2018-feat-R_Parking/src/Common/BasicWalker.cpp</file>
+            <file>file:/C:/cygwin64/tmp/ev3rt-beta7-2-release/hrp2/sdk/workspace/etrobocon2018-feat-R_Parking/src/Right/BlockZone.cpp</file>
+            <file>file:/C:/cygwin64/tmp/ev3rt-beta7-2-release/hrp2/sdk/workspace/etrobocon2018-feat-R_Parking/include/Right/Grid.h</file>
+            <file>file:/C:/cygwin64/tmp/ev3rt-beta7-2-release/hrp2/sdk/workspace/etrobocon2018-feat-R_Parking/include/Right/BlockZone.h</file>
+            <file>file:/C:/cygwin64/tmp/ev3rt-beta7-2-release/hrp2/sdk/workspace/etrobocon2018-feat-R_Parking/include/Common/Direction.h</file>
+            <file>file:/C:/cygwin64/tmp/ev3rt-beta7-2-release/hrp2/sdk/workspace/etrobocon2018-feat-R_Parking/src/Common/walker.cpp</file>
+            <file>file:/C:/cygwin64/tmp/ev3rt-beta7-2-release/hrp2/sdk/workspace/etrobocon2018-feat-R_Parking/src/Right/Grid.cpp</file>
+            <file>file:/C:/cygwin64/tmp/ev3rt-beta7-2-release/hrp2/sdk/workspace/etrobocon2018-feat-R_Parking/src/Right/Parking.cpp</file>
+            <file>file:/C:/cygwin64/tmp/ev3rt-beta7-2-release/hrp2/sdk/workspace/etrobocon2018-feat-R_Parking/include/Common/walker.h</file>
+            <file>file:/C:/cygwin64/tmp/ev3rt-beta7-2-release/hrp2/sdk/workspace/etrobocon2018-feat-R_Parking/src/Right/SelfLocalization.cpp</file>
+        </group>
+    </open-files>
 </project-private>

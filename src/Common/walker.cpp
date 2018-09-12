@@ -2,7 +2,8 @@
 #include "common.h"
 
 Walker::Walker():
-  leftWheel(left_motor), rightWheel(right_motor) {
+  leftWheel(left_motor), rightWheel(right_motor) ,
+  steering(leftWheel, rightWheel){
     reset();
 }
 
@@ -30,6 +31,12 @@ void Walker::run(int8_t pwm, int8_t turn) {
   setBrakeMotor(false);
   leftWheel.setPWM(pwm - turn);
   rightWheel.setPWM(pwm + turn);
+  
+}
+
+
+void Walker::runSteering(int power, int turnRatio) {
+    steering.setPower(power, turnRatio);
 }
 
 void Walker::rotationRight(int8_t pwm) {

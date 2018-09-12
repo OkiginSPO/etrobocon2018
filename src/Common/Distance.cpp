@@ -5,6 +5,7 @@
  */
 
 #include "Distance.h"
+#include "common.h"
 
 int32_t Distance::getDistanceTotal(int32_t countL, int32_t countR){
   leftMotorDegTotal = countL;
@@ -28,7 +29,7 @@ void Distance::resetDistance(int32_t countL, int32_t countR){
 
 /* 個々から以下は和泉 */
 
-static float TIRE_DIAMETER = 97.0; // タイヤ直径(97mm)
+// static float TIRE_DIAMETER = 97.0; // タイヤ直径(97mm)
 static float distance = 0.0;     //走行距離
 static float distance4msL = 0.0; //左タイヤの4ms間の距離
 static float distance4msR = 0.0; //右タイヤの4ms間の距離

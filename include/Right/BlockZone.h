@@ -15,18 +15,23 @@
 #include "Grid.h"
 #include "BasicWalker.h"
 
+struct HSV {
+    int hue;
+    int saturation;
+    int value;
+};
 
-class BlockZone
-{
-  public:
+class BlockZone {
+public:
     // コンストラクタ
     BlockZone();
 
     //
     void start();
 
-  private:
+private:
     Walker walker;
+    ColorSensor colorSensor;
     SelfLocalization sl;
     Clock clock;
     Distance distance;
@@ -36,18 +41,26 @@ class BlockZone
     int32_t distance_total;
     int32_t remnant_X;
     int32_t remnant_Y;
-    
-    /* 連番チェック*/
-    bool IsSerialnumber(int32_t a, int32_t b, int32_t c);
-    
-    /* 同値チェック */
-    bool IsEquivalent(int32_t a, int32_t b, int32_t c);
-    
-    /* 動く */
-    void move(int32_t angle, int32_t distance);
 
-    /* mm から distance(回転数) */
-    int32_t MiriMeterToDistance(int32_t mm);
+    bool isDestinationArrival;
+    
+    colorid_t GetColorForRgb(rgb_raw_t rgb);
+    
+    HSV GetHsv(int r, int g, int b);
+    
+    colorid_t GetColorForHsv(HSV hsv);
+    
+    // 目的地がサークルかチェック
+    bool IsGoToCircle(int8_t x, int8_t y);
+    
+    // 目的地がラインかチェック
+    bool IsGoToLine(int8_t x, int8_t y, int8_t target_x, int8_t target_y);
+
+    struct GRID_XY {
+        int32_t gridX;
+        int32_t gridY;
+        int order;
+    };
 };
 
 #endif
