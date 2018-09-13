@@ -2,7 +2,8 @@
 #include "common.h"
 
 Walker::Walker():
-  leftWheel(left_motor), rightWheel(right_motor) {
+  leftWheel(left_motor), rightWheel(right_motor) ,
+  steering(leftWheel, rightWheel){
     reset();
 }
 
@@ -30,6 +31,56 @@ void Walker::run(int8_t pwm, int8_t turn) {
   setBrakeMotor(false);
   leftWheel.setPWM(pwm - turn);
   rightWheel.setPWM(pwm + turn);
+}
+
+
+void Walker::runSteering(int power, int turnRatio) {
+    steering.setPower(power, turnRatio);
+}
+
+void Walker::rotationRight(int8_t pwm) {
+  rightWheel.setBrake(false);
+  leftWheel.setPWM(pwm);
+}
+
+void Walker::rotationLeft(int8_t pwm) {
+  leftWheel.setBrake(false);
+  rightWheel.setPWM(pwm);
+}
+
+void Walker::turnRight(int32_t angle) {
+  int32_t oldAngle = getCountL();
+  int32_t direction = 0;
+  char msg[32];
+
+  while(1) {
+    rotationRight(60);
+
+    sprintf(msg, "getCountL():%d", (int)getCountL());
+    msg_f(msg, 4);
+
+    sprintf(msg, "oldAngle:%d", (int)oldAngle);
+    msg_f(msg, 5);
+
+    direction = ((TIRE_DIAMETER / 2) * (getCountL() - oldAngle)) / (TREAD);
+    
+    sprintf(msg, "direction:%d", (int)direction);
+    msg_f(msg, 2);
+
+    sprintf(msg, "anglen:%d", (int)angle);
+    msg_f(msg, 1);
+
+    if (direction > angle ) {
+      break;
+    }
+
+    sprintf(msg, "direction2:%d", (int)direction);
+    msg_f(msg, 3);
+
+    clock.sleep(4);
+  }
+
+  stop();
 }
 
 void Walker::setBrakeMotor(bool brake) {
@@ -60,7 +111,7 @@ void Walker::moveAngle(int8_t pwm, int angle) {
 
 void Walker::angleChange(int angle, int rotation) {
   int32_t defaultAngleL;
-  int8_t dAngle = 75; // 45度におけるモーター回転数 (床材によって変わる？)
+  int8_t dAngle = 72; // 45度におけるモーター回転数 (床材によって変わる？)
 
   if (rotation >= 0) {
     if (isRight) {

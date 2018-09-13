@@ -11,6 +11,7 @@
 #include "walker.h"
 #include "SelfLocalization.h"
 #include "Distance.h"
+#include "BlockZone.h"
 
 using namespace ev3api;
 
@@ -28,6 +29,7 @@ class Test
     SelfLocalization sl;
     Clock clock;
     Distance distance;
+    BlockZone blockZone;
     int32_t distance_total;
 };
 
