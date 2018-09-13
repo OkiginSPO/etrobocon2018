@@ -3,19 +3,12 @@ app_path := $(dir $(lastword $(MAKEFILE_LIST)))
 
 # src配下の全ディレクトリをコンパイル対象にする。
 APPL_DIR += $(shell find $(app_path)src -type d)
-<<<<<<< HEAD
 
 #include配下の全ディレクトリをコンパイル対象にする。
 INCLUDES += $(foreach dir,$(shell find $(app_path)include -type d),-I$(dir))
 
 #test配下のディレクトリの指定するファイルをコンパイル対象にする。
 APPL_DIR += $(app_path)test
-=======
-APPL_DIR += $(app_path)test
-
-#include配下の全ディレクトリをコンパイル対象にする。
-INCLUDES += $(foreach dir,$(shell find $(app_path)include -type d),-I$(dir))
->>>>>>> 59f73102056c212289b49a25d930439fd35f81b5
 INCLUDES += -I$(app_path)test
 
 APPL_COBJS += 
@@ -30,7 +23,7 @@ APPL_CXXOBJS += test.o \
   LineTracerWalker.o \
   Pid.o \
   ParallelParking.o \
-  ParpendicularParking.o
+  ParpendicularParking.o \
   Parking.o \
   SpeedControl.o \
   TurnControl.o \
