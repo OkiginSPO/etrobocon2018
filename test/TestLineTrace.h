@@ -1,0 +1,6 @@
+#ifndef TESTLINETRACE_H
+#define TESTLINETRACE_H
+
+
+
+#endif /* TESTLINETRACE_H */
