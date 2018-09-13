@@ -8,7 +8,7 @@ MotorWheel::MotorWheel(motor_port_t _motor_port)
     , distanceTotal(0.0F)
     , currentPWM(0)
 {
-    ev3_motor_config(_motor_port, LARGE_MOTOR);
+    ev3_motor_config(motor_port, LARGE_MOTOR);
 }
 
 MotorWheel::~MotorWheel()
@@ -39,7 +39,7 @@ void MotorWheel::Stop(bool _brake)
     ev3_motor_stop(motor_port, _brake);
 }
 
-void MotorWheel::UpdateDistance(void )
+void MotorWheel::UpdateDistance(void)
 {
     float currentAngle = ev3_motor_get_counts(motor_port);
     distanceDelta = ((PI * WHEEL_DIAMETER) / 360.0) * (currentAngle - lastAngle);

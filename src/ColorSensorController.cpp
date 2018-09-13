@@ -3,7 +3,7 @@
 ColorSensorController::ColorSensorController(sensor_port_t _port)
     : sensor_port(_port)
 {
-
+    ev3_color_sensor_get_reflect(sensor_port);
 }
 
 ColorSensorController::~ColorSensorController()
