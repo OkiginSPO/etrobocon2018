@@ -8,8 +8,7 @@
 
 #include "ev3api.h"
 #include "app.h"
-#include "common.h"
-#include "test.h"
+#include "test/TestLineTrace.h"
 
 #define DEBUG
 #ifdef DEBUG
@@ -21,22 +20,46 @@
 /* Bluetooth */
 static int32_t bt_cmd = 0;  // Bluetooth コマンド 1:リモートスタート
 static FILE *bt = NULL; // Bluetooth ファイルハンドル
+static TestLineTrace *lineTrace;
+
+void tracer_cyc(intptr_t unused) {
+    act_tsk(TRACER_TASK);
+}
+
+void tracer_task(intptr_t unused) {
+    if (lineTrace->Terminated()) {
+        wup_tsk(MAIN_TASK);
+    } else {
+        lineTrace->TestRun();
+    }
+    ext_tsk();
+}
 
 /* メインタスク */
 void main_task(intptr_t unused)
 {
+    lineTrace = new TestLineTrace();
+    lineTrace->Initialize();
+    
+    tslp_tsk(100);
+    
+    lineTrace->WaitForStart();
+    
+    ev3_sta_cyc(TRACER_CYC);
+    
+    slp_tsk();
+    
+    ev3_stp_cyc(TRACER_CYC);
+
   /* Open Bluetooth file */
-  bt = ev3_serial_open_file(EV3_SERIAL_BT);
-  assert(bt != NULL);
+//  bt = ev3_serial_open_file(EV3_SERIAL_BT);
+//  assert(bt != NULL);
 
   /* Bluetooth 通信タスクの軌道 */
-  act_tsk(BT_TASK);
+//  act_tsk(BT_TASK);
 
-  Test testapp;
-  testapp.start();
-
-  ter_tsk(BT_TASK);
-  fclose(bt);
+//  ter_tsk(BT_TASK);
+//  fclose(bt);
 
   ext_tsk();
 }

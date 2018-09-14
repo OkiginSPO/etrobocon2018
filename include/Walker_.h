@@ -8,6 +8,11 @@
 #include "TouchSensorController.h"
 #include "Scenario.h"
 
+typedef enum {
+    AHEAD,
+    STOP
+} RUN_STATE;
+
 class Walker_
 {
     public:
@@ -16,6 +21,7 @@ class Walker_
         void Initialize(void);
         void WaitForStart(void);
         void LineTrace(void);
+        bool Terminated(void);
     
     private:
         const float DELTA_T;

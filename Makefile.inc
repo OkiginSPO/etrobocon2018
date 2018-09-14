@@ -1,9 +1,30 @@
+mkfile_path := $(dir $(lastword $(MAKEFILE_LIST)))
+
 APPL_COBJS += 
-APPL_CXXOBJS += test.o \
-  common.o \
-  walker.o \
+
+APPL_CXXOBJS += ArmMotorController.o \
+  ColorSensorController.o \
+  Distance.o \
+  GyroSensorController.o \
+  MotorWheel.o \
+  PIDController.o \
+  PIDParam.o \
+  PortSettings.o \
+  Scenario.o \
+  ScenarioLcourse.o \
+  ScenarioRcourse.o \
+  Scene.o \
   SelfLocalization.o \
-  Distance.o
+  SonarSensorController.o \
+  TailMotorController.o \
+  TouchSensorController.o \
+  Utility.o \
+  WalkerParam.o \
+  Walker_.o \
+  common.o \
+  test.o \
+  walker.o \
+  TestLineTrace.o
 
 SRCLANG := c++
 
@@ -14,3 +35,10 @@ include $(EV3RT_SDK_LIB_DIR)/libcpp-ev3/Makefile
 
 endif
 
+APPL_DIR += \
+    $(mkfile_path)../include \
+    $(mkfile_path)../test
+
+INCLUDES += \
+    -I$(mkfile_path)../include \
+    -I$(mkfile_path)../test

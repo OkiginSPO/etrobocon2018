@@ -9,6 +9,8 @@ class Localization
         explicit Localization(const MotorWheel *_leftWheel, const MotorWheel *_rightWheel);
         ~Localization();
         float GetDistance(void);
+        void UpdateDistance(void);
+        void Reset(void);
         
     private:
         const MotorWheel *leftWheel;

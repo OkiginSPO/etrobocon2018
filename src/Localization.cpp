@@ -19,3 +19,16 @@ float Localization::GetDistance(void)
     
     return distance;
 }
+
+void Localization::UpdateDistance(void)
+{
+    leftWheel->UpdateDistance();
+    rightWheel->UpdateDistance();
+}
+
+void Localization::Reset(void)
+{
+    leftWheel->Initialize();
+    rightWheel->Initialize();
+}
+
