@@ -10,10 +10,26 @@ void bluetoothTest::test(FILE* bt)
 
     bluetooth.fetchDijkstraData(bt);
 
-    char msg[22];
-    sprintf(msg,"ds: %d %d %d %d"
-    , bluetooth.dijkstraData[0], bluetooth.dijkstraData[1], bluetooth.dijkstraData[2], bluetooth.dijkstraData[3]);
+    char msg[30];
+    msg_f((bluetooth.isValidDijkstraData ? "true" : "false"), 1);
+    sprintf(msg, "size: %d", bluetooth.dijkstraData.size());
+    msg_f(msg,3);
+
+    sprintf(msg
+    , "first: %d %d %d %d"
+    , bluetooth.dijkstraData[0]
+    , bluetooth.dijkstraData[1]
+    , bluetooth.dijkstraData[2]
+    , bluetooth.dijkstraData[3]);
     msg_f(msg,5);
+
+    sprintf(msg
+    , "last: %d %d %d %d"
+    , bluetooth.dijkstraData[bluetooth.dijkstraData.size()-4]
+    , bluetooth.dijkstraData[bluetooth.dijkstraData.size()-3]
+    , bluetooth.dijkstraData[bluetooth.dijkstraData.size()-2]
+    , bluetooth.dijkstraData[bluetooth.dijkstraData.size()-1]);
+    msg_f(msg,7);
 
     // char subject[] = "msg_f test";
     // init_f(subject);

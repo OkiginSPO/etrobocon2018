@@ -6,15 +6,23 @@
 #define BLUETOOTH_SEND_CMD 'c'
 
 #include "common.h"
+#include <vector>
 
+/**
+ * @brief 
+ * TODO バリデーション(文字数のチェック)処理を書く。
+ */
 class Bluetooth
 {
   public:
     // コンストラクタ
     Bluetooth();
-    // Bluetoothから値をdijkstraData配列にセット
+    // Bluetoothから値をdijkstraData可変長配列にセット
     void fetchDijkstraData(FILE* bt);
-    int8_t dijkstraData[DIJKSTRA_ARRAY_BYTE];
+    // dijkstraData可変長配列
+    std::vector<int8_t> dijkstraData;
+    // バリデーションの結果確認
+    bool isValidDijkstraData = true;
 
   private:
     char sendCmd;

@@ -21,15 +21,20 @@ void Bluetooth::fetchDijkstraData(FILE* bt)
 
     // tslp_tsk( 100 ); スリープすると表示されなくなる。
 
-    // msg_f("response", 2);
     // 文字列を取得
     fgets(recvData, sizeof(recvData), bt);
+    // msg_f("recieve success", 1);
 
-    // msg_f("response success", 3);
-    // msg_f(recvData, 1);
-    // std::array<short, arrayBytes> runData;
-    for(int i=0; i<(int)sizeof(recvData); i++){
-        dijkstraData[i] = recvData[i]-'0';
+    // 例外処理
+    if(sizeof(recvData) <= 1){
+        isValidDijkstraData = false;
+        return;
+    }
+    // msg_f("exeption pass", 1);
+
+    for(int i=0; recvData[i]!='\n'; i++){
+        dijkstraData.push_back(recvData[i]-'0');
     };
+    // msg_f("convert pass", 1);
 
 }
