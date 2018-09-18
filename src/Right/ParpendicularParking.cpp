@@ -11,7 +11,7 @@ void PerpendicularParking::runParking()
     basicWalker.reset();
     basicWalker.setPidWithoutTarget( 4.0, 2.0, 0.02 );
     // 最初に進む距離。(350 = 35cm)
-    basicWalker.goStraight( 50, 350 );
+    basicWalker.goStraight( 50, 650 );
     basicWalker.reset();
 
     // 振り向く角度と向き。(90 = 90度)
