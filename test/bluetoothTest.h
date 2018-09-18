@@ -3,13 +3,16 @@
 
 #include "common.h"
 #include "Bluetooth.h"
+#include "BlockZone.h"
 
 class bluetoothTest{
     public:
         // Bluetoothテスト
-        void test(FILE* bt);
+        void testFetchData(FILE* bt);
+        void testBlockZone(FILE* bt);
     private:
         Bluetooth bluetooth;
+        BlockZone blockZone;
 };
 
 # endif

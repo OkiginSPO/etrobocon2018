@@ -24,6 +24,9 @@ void Bluetooth::fetchDijkstraData(FILE* bt)
     // 文字列を取得
     fgets(recvData, sizeof(recvData), bt);
     // msg_f("recieve success", 1);
+    // char ms[30];
+    // sprintf(ms, "raw: %d %d %d %d", recvData[0], recvData[1], recvData[2], recvData[3]);
+    // msg_f(ms, 2);
 
     // 例外処理
     if(sizeof(recvData) <= 1){
@@ -32,9 +35,17 @@ void Bluetooth::fetchDijkstraData(FILE* bt)
     }
     // msg_f("exeption pass", 1);
 
-    for(int i=0; recvData[i]!='\n'; i++){
+    // 先頭4文字はバリデーションデータの為、初期値を4にして5番目から取得する。
+    for(int i=4; recvData[i]!='\n'; i++){
         dijkstraData.push_back(recvData[i]-'0');
     };
     // msg_f("convert pass", 1);
+
+    // 例外処理
+    size_t size = (recvData[1]-'0')*100 + (recvData[2]-'0')*10 + (recvData[3]-'0');
+    if(dijkstraData.size() != size){
+        isValidDijkstraData = false;
+        return;
+    }
 
 }

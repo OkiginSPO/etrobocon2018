@@ -1,7 +1,7 @@
 #include "bluetoothTest.h"
 
 
-void bluetoothTest::test(FILE* bt)
+void bluetoothTest::testFetchData(FILE* bt)
 {
     char title[] = "bluetooth test";
     init_f(title);
@@ -11,7 +11,9 @@ void bluetoothTest::test(FILE* bt)
     bluetooth.fetchDijkstraData(bt);
 
     char msg[30];
-    msg_f((bluetooth.isValidDijkstraData ? "true" : "false"), 1);
+    sprintf(msg, "valid: %s", (bluetooth.isValidDijkstraData ? "true" : "false"));
+    msg_f(msg, 1);
+
     sprintf(msg, "size: %d", bluetooth.dijkstraData.size());
     msg_f(msg,3);
 
@@ -45,4 +47,14 @@ void bluetoothTest::test(FILE* bt)
     // msg_f(sum, 2);
     // msg_f(&recv[0], 1); 0番目の値が表示される。
     // msg_f(recv, 1);
+}
+
+void bluetoothTest::testBlockZone(FILE* bt)
+{
+  msg_f("prepareBluetooth",1);
+  blockZone.prepareBluetooth(bt);
+
+  msg_f("start",2);
+  tslp_tsk( 2000 ); // 表示されているか確認する為、一時停止
+  blockZone.start();
 }
