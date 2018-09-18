@@ -27,7 +27,9 @@ colorSensor(color_sensor),
 sl(walker.getCountL(), walker.getCountR(), false) {
 }
 
-//
+void BlockZone::prepareMoveData(FILE* bt) {
+    bluetooth.fetchDijkstraData(bt);
+}
 
 void BlockZone::start() {
     ev3_led_set_color(LED_ORANGE); /* 初期化完了通知 */

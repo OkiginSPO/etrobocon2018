@@ -14,6 +14,7 @@
 #include "Direction.h"
 #include "Grid.h"
 #include "BasicWalker.h"
+#include "Bluetooth.h"
 
 struct HSV {
     int hue;
@@ -25,6 +26,9 @@ class BlockZone {
 public:
     // コンストラクタ
     BlockZone();
+
+    // Bluetooth通信で行動データ取得
+    void prepareMoveData(FILE* bt);
 
     //
     void start();
@@ -61,6 +65,8 @@ private:
         int32_t gridY;
         int order;
     };
+
+    Bluetooth bluetooth;
 };
 
 #endif

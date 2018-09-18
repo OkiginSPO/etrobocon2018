@@ -52,7 +52,7 @@ void bluetoothTest::testFetchData(FILE* bt)
 void bluetoothTest::testBlockZone(FILE* bt)
 {
   msg_f("prepareBluetooth",1);
-  blockZone.prepareBluetooth(bt);
+  blockZone.prepareMoveData(bt);
 
   msg_f("start",2);
   tslp_tsk( 2000 ); // 表示されているか確認する為、一時停止
