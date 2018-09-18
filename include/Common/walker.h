@@ -6,6 +6,7 @@
 
 #include "Motor.h"
 #include "Clock.h"
+#include "Steering.h"
 
 using namespace ev3api;
 
@@ -23,6 +24,14 @@ class Walker {
     void reset();
     // 走る
     void run(int8_t pwm, int8_t turn);
+
+    void runSteering(int power, int turnRatio);
+    // 右回転
+    void rotationRight(int8_t pwm);
+    // 左回転
+    void rotationLeft(int8_t pwm);
+    // 右回転
+    void turnRight(int32_t angle);
     // 止まる
     void stop();
     // ブレーキ
@@ -40,6 +49,7 @@ class Walker {
     Motor leftWheel;
     Motor rightWheel;
     Clock clock;
+    Steering steering;
     bool isRight = true; // 右: 1, 左: -1
 
 };

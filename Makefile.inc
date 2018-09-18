@@ -22,10 +22,14 @@ APPL_CXXOBJS += test.o \
   BasicWalker.o \
   LineTracerWalker.o \
   Pid.o \
+  ParallelParking.o \
+  ParpendicularParking.o \
+  Parking.o \
   SpeedControl.o \
   TurnControl.o \
-  ParallelParking.o \
-  ParpendicularParking.o
+  Direction.o \
+  BlockZone.o \
+  Grid.o
 
 
 
