@@ -4,7 +4,6 @@ APPL_COBJS +=
 
 APPL_CXXOBJS += ArmMotorController.o \
   ColorSensorController.o \
-  Distance.o \
   GyroSensorController.o \
   MotorWheel.o \
   PIDController.o \
@@ -14,30 +13,13 @@ APPL_CXXOBJS += ArmMotorController.o \
   ScenarioLcourse.o \
   ScenarioRcourse.o \
   Scene.o \
-  SelfLocalization.o \
   SonarSensorController.o \
   TailMotorController.o \
   TouchSensorController.o \
   Utility.o \
   WalkerParam.o \
   Walker_.o \
-  common.o \
-  test.o \
   Localization.o \
-  walker.o \
-  SelfLocalization.o \
-  Distance.o \
-  BasicWalker.o \
-  LineTracerWalker.o \
-  Pid.o \
-  ParallelParking.o \
-  ParpendicularParking.o \
-  Parking.o \
-  SpeedControl.o \
-  TurnControl.o \
-  Direction.o \
-  BlockZone.o \
-  Grid.o \
   TestLineTrace.o
 
 SRCLANG := c++
