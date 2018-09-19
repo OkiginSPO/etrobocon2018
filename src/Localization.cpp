@@ -1,6 +1,6 @@
 #include "Localization.h"
 
-Localization::Localization(const MotorWheel* _leftWheel, const MotorWheel* _rightWheel)
+Localization::Localization(MotorWheel* _leftWheel, MotorWheel* _rightWheel)
     : leftWheel(_leftWheel)
     , rightWheel(_rightWheel)
 {
@@ -19,3 +19,16 @@ float Localization::GetDistance(void)
     
     return distance;
 }
+
+void Localization::UpdateDistance(void)
+{
+    leftWheel->UpdateDistance();
+    rightWheel->UpdateDistance();
+}
+
+void Localization::Reset(void)
+{
+    leftWheel->Initialize();
+    rightWheel->Initialize();
+}
+

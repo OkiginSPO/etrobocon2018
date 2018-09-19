@@ -8,7 +8,7 @@ class SonarSensorController
 {
     public:
         SonarSensorController(sensor_port_t _sensor_port);
-        ~SonarSensorController(void);
+        ~SonarSensorController();
         void Initialize(void);
     
     private:

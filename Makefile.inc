@@ -1,21 +1,29 @@
-# app.cppがあるディレクトリの絶対パス
-app_path := $(dir $(lastword $(MAKEFILE_LIST)))
-
-# src配下の全ディレクトリをコンパイル対象にする。
-APPL_DIR += $(shell find $(app_path)src -type d)
-
-#include配下の全ディレクトリをコンパイル対象にする。
-INCLUDES += $(foreach dir,$(shell find $(app_path)include -type d),-I$(dir))
-
-#test配下のディレクトリの指定するファイルをコンパイル対象にする。
-APPL_DIR += $(app_path)test
-INCLUDES += -I$(app_path)test
+mkfile_path := $(dir $(lastword $(MAKEFILE_LIST)))
 
 APPL_COBJS += 
-APPL_CXXOBJS += test.o \
-  bluetoothTest.o \
-  Bluetooth.o \
+
+APPL_CXXOBJS += ArmMotorController.o \
+  ColorSensorController.o \
+  Distance.o \
+  GyroSensorController.o \
+  MotorWheel.o \
+  PIDController.o \
+  PIDParam.o \
+  PortSettings.o \
+  Scenario.o \
+  ScenarioLcourse.o \
+  ScenarioRcourse.o \
+  Scene.o \
+  SelfLocalization.o \
+  SonarSensorController.o \
+  TailMotorController.o \
+  TouchSensorController.o \
+  Utility.o \
+  WalkerParam.o \
+  Walker_.o \
   common.o \
+  test.o \
+  Localization.o \
   walker.o \
   SelfLocalization.o \
   Distance.o \
@@ -29,9 +37,8 @@ APPL_CXXOBJS += test.o \
   TurnControl.o \
   Direction.o \
   BlockZone.o \
-  Grid.o
-
-
+  Grid.o \
+  TestLineTrace.o
 
 SRCLANG := c++
 
@@ -41,3 +48,9 @@ ifdef CONFIG_EV3RT_APPLICATION
 include $(EV3RT_SDK_LIB_DIR)/libcpp-ev3/Makefile
 
 endif
+
+APPL_DIR += \
+    $(mkfile_path)../include
+
+INCLUDES += \
+    -I$(mkfile_path)../include

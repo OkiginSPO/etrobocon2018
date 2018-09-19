@@ -3,7 +3,7 @@
 ColorSensorController::ColorSensorController(sensor_port_t _port)
     : sensor_port(_port)
 {
-
+    ev3_sensor_config(sensor_port, COLOR_SENSOR);
 }
 
 ColorSensorController::~ColorSensorController()
