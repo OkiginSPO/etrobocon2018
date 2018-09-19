@@ -6,16 +6,17 @@
 class Scenario
 {
     public:
-        Scenario();
+        Scenario(int _totalStep);
         virtual ~Scenario();
         Scene* GetCurrentScene(void);
         bool UpdateStep(void);
         
     private:
+        const int totalStep;
         int currentStep;
         
     protected:
-        Scene *scenes[];
+        Scene **scenes;
 };
 
 #endif /* SCENARIO_H */

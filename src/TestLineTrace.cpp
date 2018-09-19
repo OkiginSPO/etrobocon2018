@@ -8,7 +8,8 @@ TestLineTrace::TestLineTrace()
 
 TestLineTrace::~TestLineTrace()
 {
-
+    delete scenarioR;
+    delete walker_;
 }
 
 void TestLineTrace::Initialize(void)
@@ -30,5 +31,3 @@ void TestLineTrace::TestRun(void)
 {
     walker_->LineTrace();
 }
-
-

@@ -8,7 +8,7 @@
 
 #include "ev3api.h"
 #include "app.h"
-#include "test/TestLineTrace.h"
+#include "TestLineTrace.h"
 
 #define DEBUG
 #ifdef DEBUG

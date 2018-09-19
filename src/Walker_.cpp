@@ -3,7 +3,7 @@
 #include "Walker_.h"
 #include "Utility.h"
 
-Walker_::Walker_(Scenario _scenario)
+Walker_::Walker_(Scenario *_scenario)
     : DELTA_T(0.004F)
     , targetBlightness(20)
     , terminated(false)
@@ -46,7 +46,7 @@ void Walker_::WaitForStart(void)
 void Walker_::LineTrace()
 {
     float scenarioDistance;
-    RUN_STATE runState = RUN_STATE.AHEAD;
+    RUN_STATE runState = RUN_STATE::AHEAD;
     Scene *currentScene;
     
     localization->UpdateDistance();
@@ -62,7 +62,7 @@ void Walker_::LineTrace()
         ev3_speaker_play_tone(NOTE_C4, 1000);
         
         if(!updated) {
-            runState = RUN_STATE.STOP;
+            runState = RUN_STATE::STOP;
         }
     }
     
@@ -75,17 +75,17 @@ void Walker_::LineTrace()
     int pwmL = 0;
     
     switch(runState) {
-        case RUN_STATE.AHEAD:
+        case RUN_STATE::AHEAD:
             blightness = colorSensorController->GetBrightness();
             pidValue = pidController->GetOperationAmount(blightness, targetBlightness);
-            operation = Utility.math_limit((int)pidValue, 0, 100);
+            operation = Utility::math_limit((int)pidValue, 0, 100);
             pwmL = (currentScene->GetForward() + operation);
             pwmR = (currentScene->GetForward() - operation);
             
             leftWheel->Run(pwmL);
             rightWheel->Run(pwmR);
             break;
-        case RUN_STATE.STOP:
+        case RUN_STATE::STOP:
             leftWheel->Stop(true);
             rightWheel->Stop(true);
             terminated = true;

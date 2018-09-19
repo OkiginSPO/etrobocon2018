@@ -8,10 +8,10 @@
 #include "TouchSensorController.h"
 #include "Scenario.h"
 
-typedef enum {
+enum class RUN_STATE {
     AHEAD,
     STOP
-} RUN_STATE;
+};
 
 class Walker_
 {

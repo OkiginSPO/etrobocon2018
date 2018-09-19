@@ -6,15 +6,15 @@
 class Localization
 {
     public:
-        explicit Localization(const MotorWheel *_leftWheel, const MotorWheel *_rightWheel);
+        explicit Localization(MotorWheel *_leftWheel, MotorWheel *_rightWheel);
         ~Localization();
         float GetDistance(void);
         void UpdateDistance(void);
         void Reset(void);
         
     private:
-        const MotorWheel *leftWheel;
-        const MotorWheel *rightWheel;
+        MotorWheel *leftWheel;
+        MotorWheel *rightWheel;
 };
 
 #endif /* LOCALIZATION_H */

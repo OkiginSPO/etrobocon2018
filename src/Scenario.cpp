@@ -2,15 +2,19 @@
 
 #include "Scenario.h"
 
-Scenario::Scenario()
-    : currentStep(0)
+Scenario::Scenario(int _totalStep)
+    : totalStep(_totalStep)
+    , currentStep(0)
 {
-    
+    scenes = new Scene*[totalStep];
 }
 
 Scenario::~Scenario()
 {
-
+    for (int i = 0; i < totalStep; i++) {
+        delete scenes[i];
+    }
+    delete[] scenes;
 }
 
 Scene* Scenario::GetCurrentScene(void)
@@ -19,7 +23,6 @@ Scene* Scenario::GetCurrentScene(void)
 }
 
 bool Scenario::UpdateStep(void) {
-    int totalStep = (sizeof(scenes) / sizeof(*scenes));
     
     if(currentStep >= (totalStep - 1)) {
         return false;

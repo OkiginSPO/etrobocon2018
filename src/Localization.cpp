@@ -1,6 +1,6 @@
 #include "Localization.h"
 
-Localization::Localization(const MotorWheel* _leftWheel, const MotorWheel* _rightWheel)
+Localization::Localization(MotorWheel* _leftWheel, MotorWheel* _rightWheel)
     : leftWheel(_leftWheel)
     , rightWheel(_rightWheel)
 {

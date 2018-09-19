@@ -23,6 +23,7 @@ APPL_CXXOBJS += ArmMotorController.o \
   Walker_.o \
   common.o \
   test.o \
+  Localization.o \
   walker.o \
   TestLineTrace.o
 
@@ -36,9 +37,7 @@ include $(EV3RT_SDK_LIB_DIR)/libcpp-ev3/Makefile
 endif
 
 APPL_DIR += \
-    $(mkfile_path)../include \
-    $(mkfile_path)../test
+    $(mkfile_path)../include
 
 INCLUDES += \
-    -I$(mkfile_path)../include \
-    -I$(mkfile_path)../test
+    -I$(mkfile_path)../include

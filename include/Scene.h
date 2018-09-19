@@ -6,16 +6,17 @@
 class Scene
 {
     public:
+        Scene();
         explicit Scene(float p, float i, float d, int _forward, float _distance);
         ~Scene();
-        PIDParam* GetPIDParam(void);
-        float GetForward(void);
-        float GetDistance(void);
+        PIDParam* GetPIDParam(void) const;
+        float GetForward(void) const;
+        float GetDistance(void) const;
         
     private:
-        const PIDParam *pid;
-        const int forward;
-        const int distance;
+        PIDParam *pid;
+        int forward;
+        float distance;
 };
 
 #endif /* SCENE_H */

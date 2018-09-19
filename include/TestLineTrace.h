@@ -20,3 +20,4 @@ class TestLineTrace
 };
 
 #endif /* TESTLINETRACE_H */
+
