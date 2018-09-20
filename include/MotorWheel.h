@@ -12,6 +12,7 @@ public:
     void Run(int pwm);
     void Stop(bool _brake);
     void UpdateDistance(void);
+    float GetLastAngle(void) const;
     float GetDistanceDelta(void) const;
     float GetDistanceTotal(void) const;
     

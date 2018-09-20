@@ -7,6 +7,7 @@
 #include "PIDController.h"
 #include "TouchSensorController.h"
 #include "Scenario.h"
+#include "Log.h"
 
 enum class RUN_STATE {
     AHEAD,
@@ -20,6 +21,7 @@ class Walker_
         ~Walker_();
         void Initialize(void);
         void WaitForStart(void);
+        void RunOnOff(void);
         void LineTrace(void);
         bool Terminated(void);
     
@@ -35,6 +37,7 @@ class Walker_
         PIDController *pidController;
         TouchSensorController *touchSensorController;
         Scenario *scenario;
+        Log *log;
 };
 
 #endif /* WALKER__H */

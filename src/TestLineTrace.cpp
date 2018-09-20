@@ -29,5 +29,6 @@ bool TestLineTrace::Terminated(void)
 
 void TestLineTrace::TestRun(void)
 {
-    walker_->LineTrace();
+//    walker_->LineTrace();
+    walker_->RunOnOff();
 }

@@ -48,6 +48,11 @@ void MotorWheel::UpdateDistance(void)
     lastAngle = currentAngle;
 }
 
+float MotorWheel::GetLastAngle(void) const
+{
+    return lastAngle;
+}
+
 float MotorWheel::GetDistanceDelta(void) const
 {
     return distanceDelta;

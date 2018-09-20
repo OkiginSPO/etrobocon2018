@@ -31,6 +31,7 @@ void Walker_::Initialize(void)
     colorSensorController = new ColorSensorController(PORT_COLOR_SENSOR);
     pidController = new PIDController(DELTA_T);
     touchSensorController = new TouchSensorController(PORT_TOUCH_SENSOR);
+    log = new Log();
 }
 
 void Walker_::WaitForStart(void)
@@ -43,7 +44,33 @@ void Walker_::WaitForStart(void)
     }
 }
 
-void Walker_::LineTrace()
+void Walker_::RunOnOff(void)
+{
+    int pwm = 100 / 6;
+    float kp = 0.83F;
+    int blightness = colorSensorController->GetBrightness();
+    int diff = blightness - targetBlightness;
+    
+    int operation = diff * kp;
+    
+    int pwmL = pwm + operation;
+    int pwmR = pwm - operation;
+    
+    localization->UpdateDistance();
+    
+    float distance = localization->GetDistance();
+    
+    if (distance <= (6092.2 * 2.0F)) {
+        leftWheel->Run(pwmL);
+        rightWheel->Run(pwmR);
+    } else {
+        leftWheel->Stop(true);
+        rightWheel->Stop(true);
+        terminated = true;
+    }
+}
+
+void Walker_::LineTrace(void)
 {
     float scenarioDistance;
     RUN_STATE runState = RUN_STATE::AHEAD;
@@ -51,8 +78,15 @@ void Walker_::LineTrace()
     
     localization->UpdateDistance();
     
+    float lenc = leftWheel->GetLastAngle();
+    float renc = rightWheel->GetLastAngle();
+    log->l_moror_enc = lenc;
+    log->r_motor_enc = renc;
+    
     currentScene = scenario->GetCurrentScene();
     scenarioDistance = localization->GetDistance();
+    
+    log->distance = scenarioDistance;
     
     if (scenarioDistance >= (currentScene->GetDistance() * 2.0F)) {
         bool updated = true;
@@ -77,10 +111,15 @@ void Walker_::LineTrace()
     switch(runState) {
         case RUN_STATE::AHEAD:
             blightness = colorSensorController->GetBrightness();
+            log->blightness = blightness;
             pidValue = pidController->GetOperationAmount(blightness, targetBlightness);
             operation = Utility::math_limit((int)pidValue, 0, 100);
             pwmL = (currentScene->GetForward() + operation);
             pwmR = (currentScene->GetForward() - operation);
+            
+            log->l_motor_pwm = pwmL;
+            log->r_motor_pwm = pwmR;
+            log->total_pid = operation;
             
             leftWheel->Run(pwmL);
             rightWheel->Run(pwmR);
