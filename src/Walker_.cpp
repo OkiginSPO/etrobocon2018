@@ -80,13 +80,9 @@ void Walker_::LineTrace(void)
     
     float lenc = leftWheel->GetLastAngle();
     float renc = rightWheel->GetLastAngle();
-    log->l_moror_enc = lenc;
-    log->r_motor_enc = renc;
     
     currentScene = scenario->GetCurrentScene();
     scenarioDistance = localization->GetDistance();
-    
-    log->distance = scenarioDistance;
     
     if (scenarioDistance >= (currentScene->GetDistance() * 2.0F)) {
         bool updated = true;
@@ -111,15 +107,10 @@ void Walker_::LineTrace(void)
     switch(runState) {
         case RUN_STATE::AHEAD:
             blightness = colorSensorController->GetBrightness();
-            log->blightness = blightness;
             pidValue = pidController->GetOperationAmount(blightness, targetBlightness);
             operation = Utility::math_limit((int)pidValue, 0, 100);
             pwmL = (currentScene->GetForward() + operation);
             pwmR = (currentScene->GetForward() - operation);
-            
-            log->l_motor_pwm = pwmL;
-            log->r_motor_pwm = pwmR;
-            log->total_pid = operation;
             
             leftWheel->Run(pwmL);
             rightWheel->Run(pwmR);
