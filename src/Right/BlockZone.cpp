@@ -2,7 +2,7 @@
 #include "string"
 #include "vector"
 #include "stdlib.h"
-//#include "stdio.h"
+#include "TurnControl.h"
 
 // 構造体に格納されている目標座標の数
 static int32_t GRID_NUM = 9;
@@ -16,6 +16,12 @@ typedef enum {
     END // 構造体に格納されている座標を移動しきったら停止
 } RUN_STATE;
 
+typedef enum {
+    NO_DETECTION, //見検知
+    OUTER, // サークルの外側
+    MIDDLE, // 内側の白い円
+    INNER // サークルの内側の円
+} CIRCLE_POSITION;
 
 // 角度の算出に利用
 //static float GRID_X = 250; // 開発部の床が50cm  225.0; // 横(45cm) その中間点をとって22.5
@@ -34,6 +40,7 @@ void BlockZone::prepareMoveData(FILE* bt) {
 void BlockZone::start() {
     ev3_led_set_color(LED_ORANGE); /* 初期化完了通知 */
     static RUN_STATE state = TURN;
+    int8_t turn;
 
     /*
      * ロボコンが落ちる箇所発覚。std::string rootIn/put~~~に文字列を代入しようとすると落ちる（たぶんmemory outof なんちゃら）。
@@ -81,6 +88,7 @@ void BlockZone::start() {
     msg_f("start:brockZone", 3);
     bool comment_out = true;
     walker.reset();
+    int8_t speed = 20; // 前進時のpwm値
     int cur_gridX = 0; // 現在位置座標のX値 // 20スタート
     int cur_gridY = 0; // 現在位置座標のY値
     float target_dis = 0.0; // 現在位置座標から目標座標までの距離
@@ -92,11 +100,14 @@ void BlockZone::start() {
     rgb_raw_t rgb;
     HSV hsv = {0, 0, 0};
     colorid_t color;
+    static CIRCLE_POSITION circle_position = NO_DETECTION;
 
     // 計測器初期化
     distance.init();
     direction.init();
 
+    direction.setDirection(90.0);
+    
     // 目標座標までの方位、距離を格納
     grid.setDistance(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY);
     grid.setDirection(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY);
@@ -140,13 +151,34 @@ void BlockZone::start() {
                 break;
             case MOVE:
 
-                sprintf(msg, "color:%d", (int) colorSensor.getColorNumber());
-                msg_f(msg, 1);
-
+                if (IsGoToLine(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY)) {
+                    // 斜め移動は直進走行
+                    walker.run(speed, 0);
+                } else {
+                    
+                    switch (circle_position) {
+                        case OUTER:
+                        case MIDDLE:
+                            turn = 0;
+                            break;
+                        default:
+                            if (cur_dis > (target_dis * 0.8)) {
+                                // サークルの色検知とライントレースが干渉するため、目的距離の80%進んだ段階でライントレースを止める
+                                turn = 0;
+                            } else {
+                                // ライン上の移動はライントレース
+                                turn = turnControl.calculateTurnForPid(speed, colorSensor.getBrightness());
+                            }
+                            break;
+                    }
+                    
+                    walker.run(speed, turn);
+                }
+                
                 colorSensor.getRawColor(rgb);
-                sprintf(msg, "R:%3d G:%3d B:%3d", rgb.r, rgb.g, rgb.b);
-                msg_f(msg, 2);
-
+                hsv = GetHsv(rgb.r, rgb.g, rgb.b);
+                color = GetColorForHsv(hsv);
+                
                 /** 通常ルート：直進する **/
                 if (target_grid[grid_count].order == 0) {
 
@@ -156,7 +188,23 @@ void BlockZone::start() {
                             // 白色、黒色以外を検知したらサークルを検知したと判定する
 
                             if (color == COLOR_RED || color == COLOR_GREEN || color == COLOR_YELLOW || color == COLOR_BLUE) {
-                                isDestinationArrival = true;
+                                switch (circle_position) {
+                                    case NO_DETECTION:
+                                        circle_position = OUTER;
+                                        break;
+                                    case MIDDLE:
+                                        // 2回目にサークルの色を検知したら目的地到着とする
+                                        circle_position = NO_DETECTION;
+                                        isDestinationArrival = true;
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            } else {
+                                
+                                if (circle_position == OUTER) {
+                                    circle_position = MIDDLE;
+                                }
                             }
                         } else if (IsGoToLine(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY)) {
                             // 黒色を検知したらラインを検知したと判定する
@@ -171,7 +219,7 @@ void BlockZone::start() {
                     }
 
                     // 指定位置までたどり着いたら状態遷移
-                    if (isDestinationArrival || ((cur_dis) > target_dis)) {
+                    if (isDestinationArrival) {
                         if (!(grid_count < (GRID_NUM - 1))) {
                             state = END;
                             break;
