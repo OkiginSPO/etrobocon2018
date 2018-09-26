@@ -13,6 +13,10 @@
 * タイヤの進んだ距離（回転角）に関するクラス
 */
 class Distance {
+
+    /**ブロックゾーンでパラメータとして使用するタイヤ直径。common.TIRE_DIAMETERの使用範囲が把握できていない為、一時的にここに作成する**/
+#define BROCK_ZONE_TIRE_DIAMETER 101.0  //タイヤ直径 (10.1cm)
+
 public:
 	/** @return スタートしてからの回転角の合計 */
     std::int32_t getDistanceTotal( std::int32_t countL, std::int32_t countR );
