@@ -14,6 +14,8 @@
  * タイヤの進んだ距離（回転角）に関するクラス
  */
 class Direction {
+    /**ブロックゾーンでパラメータとして使用するトレッド幅.common.TREADの使用範囲が把握できていない為、一時的にここに作成する**/
+#define BROCK_ZONE_TREAD 130.0  // 車体トレッド幅(130.0mm)
 public:
     /* 初期化 */
     void init();
