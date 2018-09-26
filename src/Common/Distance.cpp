@@ -53,8 +53,8 @@ void Distance::update(){
     float distance4ms = 0.0;        //4msの距離
 
     // 4ms間の走行距離 = ((円周率 * タイヤの直径) / 360) * (モータ角度過去値　- モータ角度現在値)
-    distance4msL = ((PI * TIRE_DIAMETER) / 360.0) * (cur_angleL - pre_angleL);  // 4ms間の左モータ距離
-    distance4msR = ((PI * TIRE_DIAMETER) / 360.0) * (cur_angleR - pre_angleR);  // 4ms間の右モータ距離
+    distance4msL = ((PI * BROCK_ZONE_TIRE_DIAMETER) / 360.0) * (cur_angleL - pre_angleL);  // 4ms間の左モータ距離
+    distance4msR = ((PI * BROCK_ZONE_TIRE_DIAMETER) / 360.0) * (cur_angleR - pre_angleR);  // 4ms間の右モータ距離
     distance4ms = (distance4msL + distance4msR) / 2.0; //左右タイヤの走行距離を足して割る
     distance += distance4ms;
 
