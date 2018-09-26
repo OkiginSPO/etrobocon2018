@@ -40,6 +40,7 @@ void BlockZone::prepareMoveData(FILE* bt) {
 void BlockZone::start() {
     ev3_led_set_color(LED_ORANGE); /* 初期化完了通知 */
     static RUN_STATE state = TURN;
+    TurnControl turnControl;
     int8_t turn;
 
     /*
