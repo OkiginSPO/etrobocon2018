@@ -20,7 +20,8 @@ APPL_CXXOBJS += ArmMotorController.o \
   WalkerParam.o \
   Walker_.o \
   Localization.o \
-  TestLineTrace.o
+  TestLineTrace.o \
+  LCDController.o
 
 SRCLANG := c++
 
