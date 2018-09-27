@@ -57,7 +57,7 @@ void BlockZone::start() {
     // [2,0][2,1][2,2][2,3][2,4][2,5][2,6]
     // [1,0][1,1][1,2][1,3][1,4][1,5][1,6]
     // [0,0][0,1][0,2][0,3][0,4][0,5][0,6]
-    
+
     // [0,6][1,6][2,6][3,6][4,6][5,6][6,6]
     // [0,5][1,5][2,5][3,5][4,5][5,5][6,5]
     // [0,4][1,4][2,4][3,4][4,4][5,4][6,4]
@@ -65,7 +65,7 @@ void BlockZone::start() {
     // [0,2][1,2][2,2][3,2][4,2][5,2][6,2]
     // [0,1][1,1][2,1][3,1][4,1][5,1][6,1]
     // [0,0][1,0][2,0][3,0][4,0][5,0][6,0]
-    
+
     GRID_XY target_grid[GRID_NUM] = {
         {2, 0, 0},
         {2, 1, 0}, // 配列の指示が間違えてrう！！
@@ -77,19 +77,12 @@ void BlockZone::start() {
         {2, 5, 0},
         {2, 6, 0}
     };
-    
-    // 構造体配列の要素数を定義の時点で固定にしていない状況で
-    // 要素数を取得する必要が出た場合、
-    // 1.「sizeof 構造体変数名」で構造体配列全体のサイズを、
-    // 2.「sizeof struct タグ名」で1要素あたりのサイズを取得し、
-    // 1を2で割ることで要素数を算出すればいいと。  @izumi(検証中)
-    // GRID_NUM = ((sizeof target_grid) / (sizeof (struct GRID_XY)));
 
     char msg[128];
     msg_f("start:brockZone", 3);
     bool comment_out = true;
     walker.reset();
-    int8_t speed = 20; // 前進時のpwm値
+    int8_t speed = 10; //20; // 前進時のpwm値
     int cur_gridX = 0; // 現在位置座標のX値 // 20スタート
     int cur_gridY = 0; // 現在位置座標のY値
     float target_dis = 0.0; // 現在位置座標から目標座標までの距離
@@ -107,11 +100,15 @@ void BlockZone::start() {
     distance.init();
     direction.init();
 
-    direction.setDirection(90.0);
-    
+    // 初期車体向きを設定する
+//        direction.setDirection(90.0);
+
     // 目標座標までの方位、距離を格納
+    //    grid.setDistance(2,0,2,0);//cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY);
+    //    grid.setDirection(0,0,2,0);//cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY);
     grid.setDistance(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY);
     grid.setDirection(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY);
+
     target_dis = grid.getDistance();
     target_dir = grid.getDirection();
 
@@ -152,39 +149,11 @@ void BlockZone::start() {
                 break;
             case MOVE:
 
-                if (IsGoToLine(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY)) {
-                    // 斜め移動は直進走行
-                    walker.run(speed, 0);
-                } else {
-                    
-                    switch (circle_position) {
-                        case OUTER:
-                        case MIDDLE:
-                            turn = 0;
-                            break;
-                        default:
-                            if (cur_dis > (target_dis * 0.8)) {
-                                // サークルの色検知とライントレースが干渉するため、目的距離の80%進んだ段階でライントレースを止める
-                                turn = 0;
-                            } else {
-                                // ライン上の移動はライントレース
-                                turn = turnControl.calculateTurnForPid(speed, colorSensor.getBrightness());
-                            }
-                            break;
-                    }
-                    
-                    walker.run(speed, turn);
-                }
-                
-                colorSensor.getRawColor(rgb);
-                hsv = GetHsv(rgb.r, rgb.g, rgb.b);
-                color = GetColorForHsv(hsv);
-                
                 /** 通常ルート：直進する **/
                 if (target_grid[grid_count].order == 0) {
 
                     // センサによる停止判定(前進時のみ使用)
-                    if (cur_dis > (target_dis * 0.8)) {
+                    if ((cur_dis > (target_dis * 0.8))) {
                         if (IsGoToCircle(target_grid[grid_count].gridX, target_grid[grid_count].gridY)) {
                             // 白色、黒色以外を検知したらサークルを検知したと判定する
 
@@ -202,12 +171,13 @@ void BlockZone::start() {
                                         break;
                                 }
                             } else {
-                                
+
                                 if (circle_position == OUTER) {
                                     circle_position = MIDDLE;
                                 }
                             }
                         } else if (IsGoToLine(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY)) {
+                            ev3_speaker_play_tone(NOTE_B5, 200);
                             // 黒色を検知したらラインを検知したと判定する
                             if (color == COLOR_BLACK) {
                                 isDestinationArrival = true;
@@ -221,6 +191,7 @@ void BlockZone::start() {
 
                     // 指定位置までたどり着いたら状態遷移
                     if (isDestinationArrival) {
+                        ev3_speaker_play_tone(NOTE_A6, 200);
                         if (!(grid_count < (GRID_NUM - 1))) {
                             state = END;
                             break;
@@ -251,12 +222,43 @@ void BlockZone::start() {
                             state = TURN;
                         }
                         isDestinationArrival = false;
+                        // 抜ける
+                        break;
                     } else if ((cur_dis > target_dis) && (grid_count >= (GRID_NUM - 1))) {
                         state = END;
                     }
 
                     // 直進
-                    walker.run(10, 0);
+                    //                    walker.run(10, 0);
+                    // 前判定なので、進む条件はここに持ってきた@izumi
+                    if (IsGoToLine(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY)) {
+                        // 斜め移動は直進走行
+                        walker.run(speed, 0);
+                    } else {
+
+                        switch (circle_position) {
+                            case OUTER:
+                            case MIDDLE:
+                                turn = 0;
+                                break;
+                            default:
+                                if (cur_dis > (target_dis * 0.8)) {
+                                    // サークルの色検知とライントレースが干渉するため、目的距離の80%進んだ段階でライントレースを止める
+                                    turn = 0;
+                                } else {
+                                    // ライン上の移動はライントレース
+                                    turn = turnControl.calculateTurnForPid(speed, colorSensor.getBrightness());
+                                }
+                                break;
+                        }
+
+                        walker.run(speed, turn);
+                    }
+
+                    colorSensor.getRawColor(rgb);
+                    hsv = GetHsv(rgb.r, rgb.g, rgb.b);
+                    color = GetColorForHsv(hsv);
+
                 } else if (target_grid[grid_count].order == 99) {
                     /** 後退時 **/
 
@@ -383,5 +385,6 @@ bool BlockZone::IsGoToCircle(int8_t x, int8_t y) {
 }
 
 bool BlockZone::IsGoToLine(int8_t x, int8_t y, int8_t target_x, int8_t target_y) {
-    return (x != target_x) && (y != target_y);
+            return (x != target_x) && (y != target_y);
+//    return (x != target_x) ^ (y != target_y); //排他的論理和
 }
