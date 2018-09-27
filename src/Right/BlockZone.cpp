@@ -1,11 +1,10 @@
 #include "BlockZone.h"
 #include "string"
-#include "vector"
 #include "stdlib.h"
 #include "TurnControl.h"
 
 // 構造体に格納されている目標座標の数
-static int32_t GRID_NUM = 9;
+//static int32_t GRID_NUM = 50; GRID_NUMに20を超える値を入れてコンパイルすると暴走する.
 
 /**
  * Global variables
@@ -23,11 +22,7 @@ typedef enum {
     INNER // サークルの内側の円
 } CIRCLE_POSITION;
 
-// 角度の算出に利用
-//static float GRID_X = 250; // 開発部の床が50cm  225.0; // 横(45cm) その中間点をとって22.5
-//static float GRID_Y = 250; // 開発部の床が50cm   200.0; // 縦(40cm) その中間点をとって20.0
 // コンストラクタ
-
 BlockZone::BlockZone() :
 colorSensor(color_sensor),
 sl(walker.getCountL(), walker.getCountR(), false) {
@@ -43,39 +38,39 @@ void BlockZone::start() {
     TurnControl turnControl;
     int8_t turn;
 
-    /*
-     * ロボコンが落ちる箇所発覚。std::string rootIn/put~~~に文字列を代入しようとすると落ちる（たぶんmemory outof なんちゃら）。
-     * 初期化が間違えている可能性あり。とりあえず放置/
-     */
     /* {0,0}スタート。({0,0}は記述しない)*/
     // [0,0]地点にいるロボットは[1,0]方向を向いている
     // [0,0]→[2,0]が本来の一辺の移動である。このとき[1,0]は、その二点の中間に置かれた仮想点。
-    // [6,0][6,1][6,2][6,3][6,4][6,5][6,6]
-    // [5,0][5,1][5,2][5,3][5,4][5,5][5,6]
-    // [4,0][4,1][4,2][4,3][4,4][4,5][4,6]
-    // [3,0][3,1][3,2][3,3][3,4][3,5][3,6]
-    // [2,0][2,1][2,2][2,3][2,4][2,5][2,6]
-    // [1,0][1,1][1,2][1,3][1,4][1,5][1,6]
-    // [0,0][0,1][0,2][0,3][0,4][0,5][0,6]
 
-    // [0,6][1,6][2,6][3,6][4,6][5,6][6,6]
-    // [0,5][1,5][2,5][3,5][4,5][5,5][6,5]
-    // [0,4][1,4][2,4][3,4][4,4][5,4][6,4]
-    // [0,3][1,3][2,3][3,3][4,3][5,3][6,3]
-    // [0,2][1,2][2,2][3,2][4,2][5,2][6,2]
-    // [0,1][1,1][2,1][3,1][4,1][5,1][6,1]
-    // [0,0][1,0][2,0][3,0][4,0][5,0][6,0]
+    //                [現実]                  //                [理想]
+    // [6,0][6,1][6,2][6,3][6,4][6,5][6,6]   // [0,6][1,6][2,6][3,6][4,6][5,6][6,6]
+    // [5,0][5,1][5,2][5,3][5,4][5,5][5,6]   // [0,5][1,5][2,5][3,5][4,5][5,5][6,5]
+    // [4,0][4,1][4,2][4,3][4,4][4,5][4,6]   // [0,4][1,4][2,4][3,4][4,4][5,4][6,4]
+    // [3,0][3,1][3,2][3,3][3,4][3,5][3,6]   // [0,3][1,3][2,3][3,3][4,3][5,3][6,3]
+    // [2,0][2,1][2,2][2,3][2,4][2,5][2,6]   // [0,2][1,2][2,2][3,2][4,2][5,2][6,2]
+    // [1,0][1,1][1,2][1,3][1,4][1,5][1,6]   // [0,1][1,1][2,1][3,1][4,1][5,1][6,1]
+    // [0,0][0,1][0,2][0,3][0,4][0,5][0,6]   // [0,0][1,0][2,0][3,0][4,0][5,0][6,0]
 
-    GRID_XY target_grid[GRID_NUM] = {
+    //    GRID_XY target_grid[GRID_NUM] = {
+    //        {2, 0, 0},
+    //        {2, 1, 0}, 
+    //        {2, 2, 0},
+    //        {2, 3, 0},
+    //        {2, 4, 0},
+    //        {2, 3, 99},
+    //        {1, 4, 0},
+    //        {2, 5, 0},
+    //        {2, 6, 98}
+    //    };
+
+    GRID_XY target_grid[50] = {
         {2, 0, 0},
-        {2, 1, 0}, // 配列の指示が間違えてrう！！
+        {2, 1, 0},
         {2, 2, 0},
+        {2, 1, 99},
+        {1, 2, 0},
         {2, 3, 0},
-        {2, 4, 0},
-        {2, 3, 99},
-        {1, 4, 0},
-        {2, 5, 0},
-        {2, 6, 0}
+        {2, 4, 98}
     };
 
     char msg[128];
@@ -101,11 +96,9 @@ void BlockZone::start() {
     direction.init();
 
     // 初期車体向きを設定する
-//        direction.setDirection(90.0);
+    //        direction.setDirection(90.0);
 
     // 目標座標までの方位、距離を格納
-    //    grid.setDistance(2,0,2,0);//cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY);
-    //    grid.setDirection(0,0,2,0);//cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY);
     grid.setDistance(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY);
     grid.setDirection(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY);
 
@@ -150,7 +143,7 @@ void BlockZone::start() {
             case MOVE:
 
                 /** 通常ルート：直進する **/
-                if (target_grid[grid_count].order == 0) {
+                if (target_grid[grid_count].order == 0 || target_grid[grid_count].order == 98) {
 
                     // センサによる停止判定(前進時のみ使用)
                     if ((cur_dis > (target_dis * 0.8))) {
@@ -177,7 +170,6 @@ void BlockZone::start() {
                                 }
                             }
                         } else if (IsGoToLine(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY)) {
-                            ev3_speaker_play_tone(NOTE_B5, 200);
                             // 黒色を検知したらラインを検知したと判定する
                             if (color == COLOR_BLACK) {
                                 isDestinationArrival = true;
@@ -192,7 +184,27 @@ void BlockZone::start() {
                     // 指定位置までたどり着いたら状態遷移
                     if (isDestinationArrival) {
                         ev3_speaker_play_tone(NOTE_A6, 200);
-                        if (!(grid_count < (GRID_NUM - 1))) {
+
+                        // 最後の移動が完了したらENDへ移行
+                        if (target_grid[grid_count].order == 98) {
+                            ev3_speaker_play_tone(NOTE_FS4, 100);
+                            cur_gridX = target_grid[grid_count].gridX;
+                            cur_gridY = target_grid[grid_count].gridY;
+
+                            // 計測器のリセット
+                            distance.init();
+                            direction.setDirection(target_dir);
+
+                            // 次の座標までの方位、距離を格納する
+                            grid_count++;
+
+                            /** 通常ルート:次の進行方向へ回転するため、現在座標情報・目標座標を格納する **/
+                            GRID_XY last_target = {3, 4, 0}; //{2, 7, 0};
+                            grid.setDistance(cur_gridX, cur_gridY, last_target.gridX, last_target.gridY);
+                            grid.setDirection(cur_gridX, cur_gridY, last_target.gridX, last_target.gridY);
+                            target_dis = grid.getDistance();
+                            target_dir = grid.getDirection();
+
                             state = END;
                             break;
                         }
@@ -224,12 +236,9 @@ void BlockZone::start() {
                         isDestinationArrival = false;
                         // 抜ける
                         break;
-                    } else if ((cur_dis > target_dis) && (grid_count >= (GRID_NUM - 1))) {
-                        state = END;
                     }
 
                     // 直進
-                    //                    walker.run(10, 0);
                     // 前判定なので、進む条件はここに持ってきた@izumi
                     if (IsGoToLine(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY)) {
                         // 斜め移動は直進走行
@@ -263,7 +272,7 @@ void BlockZone::start() {
                     /** 後退時 **/
 
                     // 指定位置までたどり着いたら状態遷移(distance各値は絶対値で判断する)
-                    if ((fabs(cur_dis) > fabs(target_dis)) && (grid_count < (GRID_NUM - 1))) {
+                    if ((fabs(cur_dis) > fabs(target_dis))) {//&& (grid_count < (GRID_NUM - 1))) {
 
                         // 現在位置座標を更新
                         cur_gridX = target_grid[grid_count].gridX;
@@ -285,9 +294,6 @@ void BlockZone::start() {
                         state = TURN;
                         isDestinationArrival = false;
                         break;
-                    } else if ((cur_dis > target_dis) && (grid_count >= (GRID_NUM - 1))) {
-                        state = END;
-                        break;
                     }
 
                     // バック
@@ -296,6 +302,30 @@ void BlockZone::start() {
 
                 break;
             case END:
+                // 直角駐車場のスタート位置へ移動する
+
+                // 指定方位の一定範囲内に収まったら，移動開始
+                if (((target_dir - 1.0) < cur_dir) && (cur_dir < (target_dir + 1.0))) {
+                    // 移動
+                    if (cur_dis > target_dis) {
+                        // 終了させる
+                        ev3_speaker_play_tone(NOTE_B5, 200);
+                        delete[] target_grid;
+                    } else {
+                        walker.run(10, 0);
+                    }
+                    break;
+                }
+
+                // 回転
+                if (cur_dir > target_dir) {
+                    // 右回転
+                    walker.run(0, 10);
+                } else {
+                    // 左回転
+                    walker.run(0, -10);
+                }
+
                 // モータを停止
                 walker.stop();
                 break;
@@ -380,11 +410,24 @@ colorid_t BlockZone::GetColorForRgb(rgb_raw_t rgb) {
     return color;
 }
 
+/**
+ * サークルへの移動判定 例：{2,1} -> {2,2}
+ * @param x 目標座標x
+ * @param y 目標座標y
+ * @return サークルのある座標ならtrue
+ */
 bool BlockZone::IsGoToCircle(int8_t x, int8_t y) {
     return (x % 2 == 0) && (y % 2 == 0);
 }
 
+/**
+ * 斜め移動判定 例：{2,1} -> {1,2}
+ * @param x 現在座標X
+ * @param y 現在座標y
+ * @param target_x 目標座標x
+ * @param target_y 目標座標y
+ * @return 斜め移動判定であればtrue
+ */
 bool BlockZone::IsGoToLine(int8_t x, int8_t y, int8_t target_x, int8_t target_y) {
-            return (x != target_x) && (y != target_y);
-//    return (x != target_x) ^ (y != target_y); //排他的論理和
+    return (x != target_x) && (y != target_y);
 }
