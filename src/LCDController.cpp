@@ -1,17 +1,5 @@
 #include "LCDController.h"
 
-LCDController::LCDController()
-    : fontSize(EV3_FONT_SMALL)
-    , lcdColor(EV3_LCD_WHITE)
-{
-    Initialize();
-}
-
-LCDController::~LCDController()
-{
-
-}
-
 void LCDController::Initialize(void)
 {
     ev3_lcd_set_font(fontSize);
@@ -50,3 +38,7 @@ int LCDController::GetLineAreaHeight()
     int lineAreaHeight = lineNum * fontHeight;
     return lineAreaHeight;
 }
+
+int LCDController::fontWidth = 0;
+int LCDController::fontHeight = 0;
+int LCDController::lineNum = 0;
