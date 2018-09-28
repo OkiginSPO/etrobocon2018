@@ -31,7 +31,6 @@ void Walker_::Initialize(void)
     colorSensorController = new ColorSensorController(PORT_COLOR_SENSOR);
     pidController = new PIDController(DELTA_T);
     touchSensorController = new TouchSensorController(PORT_TOUCH_SENSOR);
-    log = new Log();
 }
 
 void Walker_::WaitForStart(void)

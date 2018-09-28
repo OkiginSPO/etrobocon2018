@@ -1,17 +1,29 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#include "Log.h"
+typedef struct {
+    int index;
+    int vattery;
+    int r_wheel_enc;
+    int l_wheel_enc;
+    int r_wheel_pwm;
+    int l_wheel_pwm;
+    int blightness;
+    float proportional;
+    float integral;
+    float diff;
+    float distance;
+    int total_pid;
+    int sysutm;
+} LOGPARAM;
 
 class Logger
 {
     public:
-        Logger();
-        ~Logger();
-        void SendLog(void);
-        
+        static LOGPARAM* GetLog(void);
+    
     private:
-        Log *log;
+        static LOGPARAM *log;
 };
 
 #endif /* LOGGER_H */
