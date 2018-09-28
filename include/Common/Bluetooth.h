@@ -6,7 +6,8 @@
 #define BLUETOOTH_SEND_CMD 'c'
 
 #include "common.h"
-#include <vector>
+#include "BlockZone.h"
+// #include <vector> はコンパイル環境によっては失敗するため、使わない。
 
 /**
  * @brief 
@@ -14,19 +15,20 @@
  */
 class Bluetooth
 {
+  private:
+    // BlockZone blockZone;
+    char sendCmd;
+
   public:
     // コンストラクタ
     Bluetooth();
     // Bluetoothから値をdijkstraData可変長配列にセット
-    void fetchDijkstraData(FILE* bt);
+    void fetchDijkstraData(FILE* bt, struct GRID_XY* grid_xy);
     // dijkstraData可変長配列
-    std::vector<int8_t> dijkstraData;
+    // std::vector<int8_t> dijkstraData;
+    char recvData[DIJKSTRA_ARRAY_BYTE+1];
     // バリデーションの結果確認
     bool isValidDijkstraData = true;
-
-  private:
-    char sendCmd;
-    char recvData[DIJKSTRA_ARRAY_BYTE+1];
 };
 
 #endif
