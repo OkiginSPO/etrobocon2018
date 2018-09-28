@@ -6,20 +6,18 @@
 class LCDController
 {
     public:
-        LCDController();
-        ~LCDController();
-        void Initialize(void);
-        void WriteMessage(const char *msg);
-        void Clear(void);
+        static void Initialize(void);
+        static void WriteMessage(const char *msg);
+        static void Clear(void);
         
     private:
-        const lcdfont_t fontSize;
-        const lcdcolor_t lcdColor;
-        int fontWidth;
-        int fontHeight;
-        int lineNum;
+        static const lcdfont_t fontSize = EV3_FONT_SMALL;
+        static const lcdcolor_t lcdColor = EV3_LCD_WHITE;
+        static int fontWidth;
+        static int fontHeight;
+        static int lineNum;
         
-        int GetLineAreaHeight(void);
+        static int GetLineAreaHeight(void);
 };
 
 #endif /* LCDCONTROLLER_H */
