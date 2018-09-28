@@ -78,12 +78,12 @@ void BlockZone::start() {
     bool comment_out = true;
     walker.reset();
     int8_t speed = 10; //20; // 前進時のpwm値
-    int cur_gridX = 2; // 現在位置座標のX値 // 20スタート
+    int cur_gridX = 0; // 現在位置座標のX値 // 20スタート
     int cur_gridY = 0; // 現在位置座標のY値
     float target_dis = 0.0; // 現在位置座標から目標座標までの距離
-    float target_dir = 90.0; // 現在位置座標から目標座標までの方位
+    float target_dir = 0.0; // 現在位置座標から目標座標までの方位
     float cur_dis = 0.0; // 距離計の現在地
-    float cur_dir = 90.0; // 方位計の現在地
+    float cur_dir = 0.0; // 方位計の現在地
     int grid_count = 0; // 目標座標構造体への参照カウンタ
     bool isDestinationArrival = false;
     rgb_raw_t rgb;
@@ -102,10 +102,6 @@ void BlockZone::start() {
     grid.setDistance(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY);
     grid.setDirection(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY);
 
-    direction.setDirection(90);
-    cur_dis = grid.getDistance();
-    cur_dir = grid.getDirection();
-    
     target_dis = grid.getDistance();
     target_dir = grid.getDirection();
 
