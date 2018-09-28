@@ -22,6 +22,12 @@ struct HSV {
     int value;
 };
 
+struct GRID_XY {
+        int32_t gridX;
+        int32_t gridY;
+        int order;
+    };
+
 class BlockZone {
 public:
     // コンストラクタ
@@ -33,7 +39,15 @@ public:
     //
     void start();
 
+    // struct GRID_XY {
+    //     int32_t gridX;
+    //     int32_t gridY;
+    //     int order;
+    // };
+
+    struct GRID_XY grid_xy[70];
 private:
+    // Bluetooth bluetooth;
     Walker walker;
     ColorSensor colorSensor;
     SelfLocalization sl;
@@ -60,13 +74,8 @@ private:
     // 目的地がラインかチェック
     bool IsGoToLine(int8_t x, int8_t y, int8_t target_x, int8_t target_y);
 
-    struct GRID_XY {
-        int32_t gridX;
-        int32_t gridY;
-        int order;
-    };
 
-    Bluetooth bluetooth;
+
 };
 
 #endif

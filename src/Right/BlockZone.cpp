@@ -29,7 +29,8 @@ sl(walker.getCountL(), walker.getCountR(), false) {
 }
 
 void BlockZone::prepareMoveData(FILE* bt) {
-    bluetooth.fetchDijkstraData(bt);
+    Bluetooth bluetooth;
+    bluetooth.fetchDijkstraData(bt, grid_xy);
 }
 
 void BlockZone::start() {
@@ -41,37 +42,36 @@ void BlockZone::start() {
     /* {0,0}スタート。({0,0}は記述しない)*/
     // [0,0]地点にいるロボットは[1,0]方向を向いている
     // [0,0]→[2,0]が本来の一辺の移動である。このとき[1,0]は、その二点の中間に置かれた仮想点。
+    // [6,0][6,1][6,2][6,3][6,4][6,5][6,6]
+    // [5,0][5,1][5,2][5,3][5,4][5,5][5,6]
+    // [4,0][4,1][4,2][4,3][4,4][4,5][4,6]
+    // [3,0][3,1][3,2][3,3][3,4][3,5][3,6]
+    // [2,0][2,1][2,2][2,3][2,4][2,5][2,6]
+    // [1,0][1,1][1,2][1,3][1,4][1,5][1,6]
+    // [0,0][0,1][0,2][0,3][0,4][0,5][0,6]
 
-    //                [現実]                  //                [理想]
-    // [6,0][6,1][6,2][6,3][6,4][6,5][6,6]   // [0,6][1,6][2,6][3,6][4,6][5,6][6,6]
-    // [5,0][5,1][5,2][5,3][5,4][5,5][5,6]   // [0,5][1,5][2,5][3,5][4,5][5,5][6,5]
-    // [4,0][4,1][4,2][4,3][4,4][4,5][4,6]   // [0,4][1,4][2,4][3,4][4,4][5,4][6,4]
-    // [3,0][3,1][3,2][3,3][3,4][3,5][3,6]   // [0,3][1,3][2,3][3,3][4,3][5,3][6,3]
-    // [2,0][2,1][2,2][2,3][2,4][2,5][2,6]   // [0,2][1,2][2,2][3,2][4,2][5,2][6,2]
-    // [1,0][1,1][1,2][1,3][1,4][1,5][1,6]   // [0,1][1,1][2,1][3,1][4,1][5,1][6,1]
-    // [0,0][0,1][0,2][0,3][0,4][0,5][0,6]   // [0,0][1,0][2,0][3,0][4,0][5,0][6,0]
+    // [0,6][1,6][2,6][3,6][4,6][5,6][6,6]
+    // [0,5][1,5][2,5][3,5][4,5][5,5][6,5]
+    // [0,4][1,4][2,4][3,4][4,4][5,4][6,4]
+    // [0,3][1,3][2,3][3,3][4,3][5,3][6,3]
+    // [0,2][1,2][2,2][3,2][4,2][5,2][6,2]
+    // [0,1][1,1][2,1][3,1][4,1][5,1][6,1]
+    // [0,0][1,0][2,0][3,0][4,0][5,0][6,0]
 
-    //    GRID_XY target_grid[GRID_NUM] = {
-    //        {2, 0, 0},
-    //        {2, 1, 0}, 
-    //        {2, 2, 0},
-    //        {2, 3, 0},
-    //        {2, 4, 0},
-    //        {2, 3, 99},
-    //        {1, 4, 0},
-    //        {2, 5, 0},
-    //        {2, 6, 98}
-    //    };
+    // GRID_XY target_grid[GRID_NUM] = {
+    //     {2, 0, 0},
+    //     {2, 1, 0}, // 配列の指示が間違えてrう！！
+    //     {2, 2, 0},
+    //     {2, 3, 0},
+    //     {2, 4, 0},
+    //     {2, 3, 99},
+    //     {1, 4, 0},
+    //     {2, 5, 0},
+    //     {2, 6, 0}
+    // };
 
-    GRID_XY target_grid[50] = {
-        {2, 0, 0},
-        {2, 1, 0},
-        {2, 2, 0},
-        {2, 1, 99},
-        {1, 2, 0},
-        {2, 3, 0},
-        {2, 4, 98}
-    };
+    
+    GRID_XY *target_grid = grid_xy;
 
     char msg[128];
     msg_f("start:brockZone", 3);
@@ -99,6 +99,8 @@ void BlockZone::start() {
     //        direction.setDirection(90.0);
 
     // 目標座標までの方位、距離を格納
+    //    grid.setDistance(2,0,2,0);//cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY);
+    //    grid.setDirection(0,0,2,0);//cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY);
     grid.setDistance(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY);
     grid.setDirection(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY);
 
@@ -170,6 +172,7 @@ void BlockZone::start() {
                                 }
                             }
                         } else if (IsGoToLine(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY)) {
+                            ev3_speaker_play_tone(NOTE_B5, 200);
                             // 黒色を検知したらラインを検知したと判定する
                             if (color == COLOR_BLACK) {
                                 isDestinationArrival = true;
