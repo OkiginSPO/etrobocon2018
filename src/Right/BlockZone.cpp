@@ -23,18 +23,21 @@ typedef enum {
 } CIRCLE_POSITION;
 
 // コンストラクタ
+
 BlockZone::BlockZone() :
 colorSensor(color_sensor),
 sl(walker.getCountL(), walker.getCountR(), false) {
 }
 
 ///BlockZone::start()以前に呼び出されてダイクストラ情報をBluetoothより取得する
+
 void BlockZone::prepareMoveData(FILE* bt) {
     Bluetooth bluetooth;
     bluetooth.fetchDijkstraData(bt, grid_xy);
 }
 
 // BlockZoneのメイン処理
+
 void BlockZone::start() {
     /* {0,0}スタート。({0,0}は記述しない)*/
     // [0,0]地点にいるロボットは[1,0]方向を向いている
@@ -47,7 +50,7 @@ void BlockZone::start() {
     // [2,0][2,1][2,2][2,3][2,4][2,5][2,6]   // [0,2][1,2][2,2][3,2][4,2][5,2][6,2]
     // [1,0][1,1][1,2][1,3][1,4][1,5][1,6]   // [0,1][1,1][2,1][3,1][4,1][5,1][6,1]
     // [0,0][0,1][0,2][0,3][0,4][0,5][0,6]   // [0,0][1,0][2,0][3,0][4,0][5,0][6,0]
-    
+
     GRID_XY target_grid[100] = {
         {2, 0, 0},
         {2, 1, 0}, // 配列の指示が間違えてrう！！
@@ -172,7 +175,9 @@ void BlockZone::start() {
                                 isDestinationArrival = true;
                             }
                         } else {
-                            if (cur_dis > target_dis) {
+                            // サークルから黒ラインに沿って仮想点に移動している際等
+                            // TODO:このif-elseの中ではなく、包括的に距離で停止処理を組み込んだ方がいいと思う。その際は移動させる必要があります
+                            if (cur_dis >= target_dis) {
                                 isDestinationArrival = true;
                             }
                         }
@@ -304,31 +309,30 @@ void BlockZone::start() {
                 break;
             case END:
                 // 直角駐車場のスタート位置へ移動する
-
-                // 指定方位の一定範囲内に収まったら，移動開始
                 if (((target_dir - 1.0) < cur_dir) && (cur_dir < (target_dir + 1.0))) {
+                    
                     // 移動
-                    if (cur_dis > target_dis) {
+                    if (cur_dis >= target_dis) {
                         // 終了させる
+                        // ループ脱出
                         ev3_speaker_play_tone(NOTE_B5, 200);
-                        delete[] target_grid;
+                        return;
                     } else {
                         walker.run(10, 0);
                     }
                     break;
-                }
-
-                // 回転
-                if (cur_dir > target_dir) {
-                    // 右回転
-                    walker.run(0, 10);
                 } else {
-                    // 左回転
-                    walker.run(0, -10);
+                    
+                    // 回転
+                    if (cur_dir > target_dir) {
+                        // 右回転
+                        walker.run(0, 10);
+                    } else {
+                        // 左回転
+                        walker.run(0, -10);
+                    }
                 }
 
-                // モータを停止
-                walker.stop();
                 break;
             default:
                 break;
