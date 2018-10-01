@@ -28,17 +28,14 @@ colorSensor(color_sensor),
 sl(walker.getCountL(), walker.getCountR(), false) {
 }
 
+///BlockZone::start()以前に呼び出されてダイクストラ情報をBluetoothより取得する
 void BlockZone::prepareMoveData(FILE* bt) {
     Bluetooth bluetooth;
     bluetooth.fetchDijkstraData(bt, grid_xy);
 }
 
+// BlockZoneのメイン処理
 void BlockZone::start() {
-    ev3_led_set_color(LED_ORANGE); /* 初期化完了通知 */
-    static RUN_STATE state = TURN;
-    TurnControl turnControl;
-    int8_t turn;
-
     /* {0,0}スタート。({0,0}は記述しない)*/
     // [0,0]地点にいるロボットは[1,0]方向を向いている
     // [0,0]→[2,0]が本来の一辺の移動である。このとき[1,0]は、その二点の中間に置かれた仮想点。
@@ -50,7 +47,7 @@ void BlockZone::start() {
     // [2,0][2,1][2,2][2,3][2,4][2,5][2,6]   // [0,2][1,2][2,2][3,2][4,2][5,2][6,2]
     // [1,0][1,1][1,2][1,3][1,4][1,5][1,6]   // [0,1][1,1][2,1][3,1][4,1][5,1][6,1]
     // [0,0][0,1][0,2][0,3][0,4][0,5][0,6]   // [0,0][1,0][2,0][3,0][4,0][5,0][6,0]
-
+    
     GRID_XY target_grid[100] = {
         {2, 0, 0},
         {2, 1, 0}, // 配列の指示が間違えてrう！！
@@ -63,7 +60,11 @@ void BlockZone::start() {
         {2, 6, 0}
     };
 
-    
+    ev3_led_set_color(LED_ORANGE); /* 初期化完了通知 */
+    static RUN_STATE state = TURN;
+    TurnControl turnControl;
+    int8_t turn;
+
     // GRID_XY *target_grid = grid_xy;
 
     char msg[128];
@@ -254,7 +255,7 @@ void BlockZone::start() {
                                     // ライン上の移動はライントレース
                                     turn = turnControl.calculateTurnForPid(speed, colorSensor.getBrightness());
                                     // turn値が少なければ無視するよう修正。これによってcalculateTurnForPidの可制御を回避できる。暫定的回避処理
-                                    if(turn < 5) {
+                                    if (turn < 5) {
                                         turn = 0;
                                     }
                                 }
