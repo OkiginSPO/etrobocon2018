@@ -366,36 +366,6 @@ void BlockZone::start() {
     }
 }
 
-static double_t DELTA_T = 0.004;
-static double_t KP = 0.38; //1;
-static double_t KI = 0; //0;
-static double_t KD = 0; //0;
-static int32_t diff[2];
-static int32_t integral;
-
-int32_t BlockZone::pid_sample(int32_t sensor_val, int32_t target_val) {
-    int32_t p, i, d;
-    // 右側ライントレース
-    diff[0] = diff[1];
-    diff[1] = sensor_val - target_val;
-    integral += (diff[1] + diff[0]) / 2.0 * DELTA_T;
-
-    p = KP * diff[1];
-    i = KI * integral;
-    d = KD * (diff[1] - diff[0]) / DELTA_T;
-    return limit_math(p + i + d);
-}
-
-int32_t BlockZone::limit_math(int32_t num) {
-    if (num < -100) {
-        return -100;
-    } else if (100 < num) {
-        return 100;
-    } else {
-        return num;
-    }
-}
-
 HSV BlockZone::GetHsv(int r, int g, int b) {
     HSV hsv = {0, 0, 0};
     int _max = 0;
