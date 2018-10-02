@@ -23,10 +23,10 @@ struct HSV {
 };
 
 struct GRID_XY {
-        int32_t gridX;
-        int32_t gridY;
-        int order;
-    };
+    int32_t gridX;
+    int32_t gridY;
+    int order;
+};
 
 class BlockZone {
 public:
@@ -61,21 +61,24 @@ private:
     int32_t remnant_Y;
 
     bool isDestinationArrival;
-    
+
     colorid_t GetColorForRgb(rgb_raw_t rgb);
-    
+
     HSV GetHsv(int r, int g, int b);
-    
+
     colorid_t GetColorForHsv(HSV hsv);
-    
+
     // 目的地がサークルかチェック
     bool IsGoToCircle(int8_t x, int8_t y);
-    
+
     // 目的地がラインかチェック
     bool IsGoToLine(int8_t x, int8_t y, int8_t target_x, int8_t target_y);
-
-
-
+    
+    // 目的地までの経路がライン上かチェック
+    bool IsMoveLines(int8_t x, int8_t y, int8_t target_x, int8_t target_y);
+    
+    int32_t pid_sample(int32_t sensor_val, int32_t target_val);
+    int32_t limit_math(int32_t num);
 };
 
 #endif
