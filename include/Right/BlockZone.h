@@ -77,8 +77,6 @@ private:
     // 目的地までの経路がライン上かチェック
     bool IsMoveLines(int8_t x, int8_t y, int8_t target_x, int8_t target_y);
     
-    int32_t pid_sample(int32_t sensor_val, int32_t target_val);
-    int32_t limit_math(int32_t num);
 };
 
 #endif
