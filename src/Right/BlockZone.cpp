@@ -338,28 +338,19 @@ void BlockZone::start() {
                 break;
             case END:
                 // 直角駐車場のスタート位置へ移動する
-                if (((target_dir - 1.0) < cur_dir) && (cur_dir < (target_dir + 1.0))) {
-
-                    // 移動
+                if (fabs(target_dir - cur_dir) < 1.0) {
                     if (cur_dis >= target_dis) {
-                        // 終了させる
-                        // ループ脱出
-                        //                        ev3_speaker_play_tone(NOTE_B5, 200);
-                        // モータを停止
+                        // ブロック並べ終了
                         walker.stop();
                         return;
                     } else {
                         walker.run(10, 0);
                     }
-                    break;
                 } else {
-
                     // 回転
-                    if (cur_dir > target_dir) {
-                        // 右回転
+                    if (cur_dir >= target_dir) {
                         walker.run(0, 10);
                     } else {
-                        // 左回転
                         walker.run(0, -10);
                     }
                 }
