@@ -5,6 +5,7 @@
 
 // 構造体に格納されている目標座標の数
 //static int32_t GRID_NUM = 50; GRID_NUMに20を超える値を入れてコンパイルすると暴走する.
+//TODO: 角度とライントレースができないのでもう放置...とりあえず、ライントレースで{2,0}に進入後、スタートできるようにする
 
 /**
  * Global variables
@@ -40,6 +41,11 @@ static TurnControl *turnControl;
 // BlockZoneのメイン処理
 
 void BlockZone::start() {
+
+    while (MovingStartPosition()) {
+        clock.sleep(4);
+    }
+
     /* {0,0}スタート。({0,0}は記述しない)*/
     // [0,0]地点にいるロボットは[1,0]方向を向いている
     // [0,0]→[2,0]が本来の一辺の移動である。このとき[1,0]は、その二点の中間に置かれた仮想点。
@@ -51,44 +57,26 @@ void BlockZone::start() {
     // [2,0][2,1][2,2][2,3][2,4][2,5][2,6]   // [0,2][1,2][2,2][3,2][4,2][5,2][6,2]
     // [1,0][1,1][1,2][1,3][1,4][1,5][1,6]   // [0,1][1,1][2,1][3,1][4,1][5,1][6,1]
     // [0,0][0,1][0,2][0,3][0,4][0,5][0,6]   // [0,0][1,0][2,0][3,0][4,0][5,0][6,0]
-    GRID_XY target_grid[100] = {
-        {2, 0, 0},
-        {2, 1, 0},
-        {2, 2, 0},
-        {3, 2, 0},
-        {4, 2, 0},
-        {3, 2, 99},
-        {2, 2, 0},
-        {2, 3, 0},
-        {2, 4, 0},
-        {2, 5, 0},
-        {2, 6, 98}
-    };
-    //    GRID_XY target_grid[100] = {
-    //        {2, 0, 0},
-    //        {2, 1, 0}, // 配列の指示が間違えてrう！！
-    //        {2, 2, 0},
-    //        {2, 3, 0},
-    //        {2, 4, 0},
-    //        {2, 3, 99},
-    //        {1, 4, 0},
-    //        {2, 5, 0},
-    //        {2, 6, 98}
-    //    };
 
-    ev3_led_set_color(LED_ORANGE); /* 初期化完了通知 */
-    static RUN_STATE state = TURN;
-    //    TurnControl turnControl;
-    int8_t turn;
 
     // GRID_XY *target_grid = grid_xy;
 
+    GRID_XY target_grid[100] = {
+        //        {2, 0, 0},
+        {2, 1, 0}, // 配列の指示が間違えてrう！！
+        {2, 2, 0},
+        {2, 3, 0},
+        {2, 4, 0},
+        {2, 3, 99},
+        {1, 4, 0},
+        {2, 5, 0},
+        {2, 6, 98}
+    };
+
+    // ブロック並べエリアから使用する
+    static CIRCLE_POSITION circle_position = NO_DETECTION;
     char msg[128];
-    msg_f("start:brockZone", 3);
-    bool comment_out = true;
-    walker.reset();
-    int8_t speed = 10; //20; // 前進時のpwm値
-    int cur_gridX = 0; // 現在位置座標のX値 // 20スタート
+    int cur_gridX = 2; // 現在位置座標のX値 // 20スタート
     int cur_gridY = 0; // 現在位置座標のY値
     float target_dis = 0.0; // 現在位置座標から目標座標までの距離
     float target_dir = 0.0; // 現在位置座標から目標座標までの方位
@@ -97,26 +85,29 @@ void BlockZone::start() {
     int grid_count = 0; // 目標座標構造体への参照カウンタ
     bool isDestinationArrival = false;
     int right_drive = -1; // プラス：右側　マイナス：左側
+
     rgb_raw_t rgb;
     HSV hsv = {0, 0, 0};
     colorid_t color;
-    static CIRCLE_POSITION circle_position = NO_DETECTION;
+    int speed = 10; // 前進時のpwm値
 
     // 計測器初期化
     distance.init();
     direction.init();
+    walker.reset();
 
-    // 初期車体向きを設定する
-    //        direction.setDirection(90.0);
+    static RUN_STATE state = TURN;
+    int8_t turn;
 
     // 目標座標までの方位、距離を格納
-    //    grid.setDistance(2,0,2,0);//cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY);
-    //    grid.setDirection(0,0,2,0);//cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY);
     grid.setDistance(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY);
     grid.setDirection(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY);
 
     target_dis = grid.getDistance();
     target_dir = grid.getDirection();
+
+    /* 初期化完了通知 */
+    ev3_led_set_color(LED_ORANGE);
 
     while (1) {
         /* 計測器更新 */
@@ -141,39 +132,39 @@ void BlockZone::start() {
                 sprintf(msg, "target_dir:%d", (int) target_dir);
                 msg_f(msg, 7);
 
-                // 指定方位程度かつ、カラー黒
-                if ((fabs(target_dir - cur_dir) < 15)) {
-                    // +-角度15以内なら、黒検知または既定角度到達で終了
-                    if ((IsMoveLines(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY) && (color == COLOR_BLACK))
-                            || (((target_dir - 1.0) < cur_dir) && (cur_dir < (target_dir + 1.0)))) {
+                if ((fabs(target_dir - cur_dir) < 2.0)) {
+                    // 90度ターンの際には、黒ライン検知でもターン終了判定を行う
+                    if ((2 <= grid_count)
+                            && IsMove90Turn(target_grid[grid_count - 2].gridX, target_grid[grid_count - 2].gridY, target_grid[grid_count - 1].gridX, target_grid[grid_count - 1].gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY)
+                            && (color == COLOR_BLACK)) {
                         state = MOVE;
-                        // TODO: 毎回初期化してみる
                         turnControl = new TurnControl();
-
-                        break;
+                        continue;
+                    } else if (fabs(target_dir - cur_dir) < 1.0) {
+                        state = MOVE;
+                        turnControl = new TurnControl();
+                        continue;
                     }
                 }
 
-                // TODO: 角度がずれるため一時的に(cur_dir > target_dir)を(cur_dir >= target_dir)に変更中
-                // 指定方位まで旋回する(10ではなく1単位で旋回しても、同様にずれるため速度は関係ないと思われる)
                 if (cur_dir >= target_dir) {
-                    // 右回転
-                    //                    walker.rotationRight(10);
                     walker.run(0, 10);
                 } else {
-                    // 左回転
-                    //                    walker.rotationLeft(10);
                     walker.run(0, -10);
                 }
 
                 break;
             case MOVE:
+                sprintf(msg, "target_X:%d", (int) target_grid[grid_count].gridX);
+                msg_f(msg, 2);
+                sprintf(msg, "target_Y:%d", (int) target_grid[grid_count].gridY);
+                msg_f(msg, 4);
 
                 /** 通常ルート：直進する **/
                 if (target_grid[grid_count].order == 0 || target_grid[grid_count].order == 98) {
 
                     // センサによる停止判定(前進時のみ使用)
-                    if ((cur_dis > (target_dis * 0.8))) {
+                    if ((cur_dis >= (target_dis * 0.8))) {
                         if (IsGoToCircle(target_grid[grid_count].gridX, target_grid[grid_count].gridY)) {
                             // 白色、黒色以外を検知したらサークルを検知したと判定する
 
@@ -215,6 +206,7 @@ void BlockZone::start() {
                     if (isDestinationArrival) {
                         ev3_speaker_play_tone(NOTE_A6, 200);
 
+
                         // 最後の移動が完了したらENDへ移行
                         if (target_grid[grid_count].order == 98) {
                             ev3_speaker_play_tone(NOTE_FS4, 100);
@@ -250,6 +242,15 @@ void BlockZone::start() {
                         // 次の座標までの方位、距離を格納する
                         grid_count++;
                         /** 通常ルート:次の進行方向へ回転するため、現在座標情報・目標座標を格納する **/
+                        if (target_grid[grid_count].order == 98) {
+
+                            sprintf(msg, "target_X:%d", (int) target_grid[grid_count].gridX);
+                            msg_f(msg, 2);
+                            sprintf(msg, "target_Y:%d", (int) target_grid[grid_count].gridY);
+                            msg_f(msg, 4);
+                            ev3_speaker_play_tone(NOTE_DS5, 200);
+                        }
+
 
                         grid.setDistance(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY);
                         grid.setDirection(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY);
@@ -275,28 +276,32 @@ void BlockZone::start() {
                         walker.run(speed, 0);
                     } else {
                         switch (circle_position) {
-                            case OUTER:
-                            case MIDDLE:
-                                turn = 0;
-                                break;
-                            default:
+                            case NO_DETECTION:
                                 if (cur_dis > (target_dis * 0.7)) {
                                     // サークルの色検知とライントレースが干渉するため、目的距離の80%進んだ段階でライントレースを止める
                                     turn = 0;
                                 } else {
                                     // ライン上の移動はライントレース
-                                    turn = turnControl->calculateTurnForPid(speed, colorSensor.getBrightness()) * right_drive;
-                                    ev3_speaker_play_tone(NOTE_C6, 3);
+                                    if (IsMoveLines(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY)) {
+                                        turn = turnControl->calculateTurnForPid(speed, colorSensor.getBrightness()) * right_drive;
+                                    } else {
+                                        turn = 0;
+                                    }
                                 }
+                                break;
+                            case OUTER:
+                                turn = 0;
+                                break;
+                            case MIDDLE:
+                                turn = 0;
+                                break;
+                            default:
+                                turn = 0;
                                 break;
                         }
 
                         walker.run(speed, turn);
                     }
-
-                    //                    colorSensor.getRawColor(rgb);
-                    //                    hsv = GetHsv(rgb.r, rgb.g, rgb.b);
-                    //                    color = GetColorForHsv(hsv);
 
                 } else if (target_grid[grid_count].order == 99) {
                     /** 後退時 **/
@@ -339,7 +344,7 @@ void BlockZone::start() {
                     if (cur_dis >= target_dis) {
                         // 終了させる
                         // ループ脱出
-                        ev3_speaker_play_tone(NOTE_B5, 200);
+                        //                        ev3_speaker_play_tone(NOTE_B5, 200);
                         // モータを停止
                         walker.stop();
                         return;
@@ -364,6 +369,54 @@ void BlockZone::start() {
                 break;
         }
     }
+
+}
+
+// trueで移動完了
+
+bool BlockZone::MovingStartPosition() {
+    bool isNotStartPosition = true;
+
+    float kp = 0.83F;
+    int speed = 10;
+    int targetBlightness = 20;
+    int blightness = 0;
+    int diff = 0;
+    int operation = 0;
+
+    rgb_raw_t rgb;
+    HSV hsv = {0, 0, 0};
+    colorid_t color;
+
+    // 赤サークル検知までライントレース
+    while (isNotStartPosition) {
+        colorSensor.getRawColor(rgb);
+        hsv = GetHsv(rgb.r, rgb.g, rgb.b);
+        color = GetColorForHsv(hsv);
+        if (color == COLOR_RED) {
+            // 赤検知で終了
+            isNotStartPosition = false;
+            break;
+        }
+
+        blightness = colorSensor.getBrightness();
+        diff = blightness - targetBlightness;
+        operation = -(diff * kp); // マイナス符号を付与することで左エッジライントレースになる
+
+        walker.run(speed, operation);
+    }
+
+    isNotStartPosition = true;
+    while (isNotStartPosition) {
+        distance.update();
+        if (60 <= distance.getDistance()) {
+            isNotStartPosition = false;
+            break;
+        }
+    }
+
+    // 初期位置への移動終了
+    return false;
 }
 
 HSV BlockZone::GetHsv(int r, int g, int b) {
@@ -465,4 +518,8 @@ bool BlockZone::IsGoToLine(int8_t x, int8_t y, int8_t target_x, int8_t target_y)
 
 bool BlockZone::IsMoveLines(int8_t x, int8_t y, int8_t target_x, int8_t target_y) {
     return (x != target_x) ^ (y != target_y); // 排他的論理和
+}
+
+bool BlockZone::IsMove90Turn(int8_t before_x, int8_t before_y, int8_t x, int8_t y, int8_t target_x, int8_t target_y) {
+    return ((x != target_x) ^ (y != target_y))&& ((x != before_x) ^ (y != before_y));
 }

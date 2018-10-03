@@ -4,6 +4,7 @@
 //static float GRID_SIZE = 150.0; //450.0; //座標のマス幅（100mm）
 
 // 角度の算出に利用(両方200のときは正方形と仮定してのこと。本来は長方形であるべき)
+// TODO: pid制御のテスト用にGRIDXYの値をいじってます
 static float GRID_X = 225.0; // 開発部の床が50cm  225.0; // 横(45cm) その中間点をとって22.5
 static float GRID_Y = 200.0; // 開発部の床が50cm   200.0; // 縦(40cm) その中間点をとって20.0
 
@@ -13,7 +14,7 @@ static float grid_direction = 0.0; //現在座標から目標座標の方位
 /* 初期化関数 */
 void Grid::init() {
     grid_distance = 0.0;
-    grid_direction = 0.0;
+    grid_direction = 90.0;
 }
 
 /* 座標aから座標bまでの移動距離を設定する関数 */

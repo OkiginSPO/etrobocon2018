@@ -13,7 +13,7 @@ static float coefficient = 1.0;// 走行体の個体差等によって変化す�
 
  /* 初期化 */
 void Direction::init(){
-    direction = 0.0;
+    direction = 90.0;
 }
 
  /* 方位を取得(右旋回が正転) */
