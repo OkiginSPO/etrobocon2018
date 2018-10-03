@@ -42,9 +42,15 @@ static TurnControl *turnControl;
 
 void BlockZone::start() {
 
+    isNotStartPosition = true;
+    circle_position_starter = NO_DETECTION;
+    PidReset(0.4, 0, 0.68);
+    
+    // スタート位置へ移動
     while (MovingStartPosition()) {
         clock.sleep(4);
     }
+    
 
     /* {0,0}スタート。({0,0}は記述しない)*/
     // [0,0]地点にいるロボットは[1,0]方向を向いている
@@ -90,6 +96,9 @@ void BlockZone::start() {
     HSV hsv = {0, 0, 0};
     colorid_t color;
     int speed = 10; // 前進時のpwm値
+
+    //    pidController = new PIDController(0.004); //TODO正直DELTAは間違えていると思う
+    //    PIDParam pParam = {0.4, 0, 0.68};
 
     // 計測器初期化
     distance.init();
@@ -139,10 +148,20 @@ void BlockZone::start() {
                             && (color == COLOR_BLACK)) {
                         state = MOVE;
                         turnControl = new TurnControl();
+
+                        // pidリセット
+                        PidReset(0.4, 0, 0.68);
+                        //                        pidController.Reset();
+                        //                        pidController.SetGain(pParam);
                         continue;
                     } else if (fabs(target_dir - cur_dir) < 1.0) {
                         state = MOVE;
                         turnControl = new TurnControl();
+
+                        // pidリセット
+                        PidReset(0.4, 0, 0.68);
+                        //                        pidController.Reset();
+                        //                        pidController.SetGain(pParam);
                         continue;
                     }
                 }
@@ -283,7 +302,9 @@ void BlockZone::start() {
                                 } else {
                                     // ライン上の移動はライントレース
                                     if (IsMoveLines(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY)) {
-                                        turn = turnControl->calculateTurnForPid(speed, colorSensor.getBrightness()) * right_drive;
+                                        //                                        turn = pidController.GetOperationAmount(colorSensor.getBrightness(), 20);
+                                        turn = pid_sample(colorSensor.getBrightness(), 20);
+                                        //                                        turn = turnControl->calculateTurnForPid(speed, colorSensor.getBrightness()) * right_drive;
                                     } else {
                                         turn = 0;
                                     }
@@ -362,52 +383,83 @@ void BlockZone::start() {
     }
 
 }
+static bool isNotStartPosition = true;
+static CIRCLE_POSITION circle_position_starter = NO_DETECTION;
 
-// trueで移動完了
+// falseで移動完了
 
 bool BlockZone::MovingStartPosition() {
-    bool isNotStartPosition = true;
-
-    float kp = 0.83F;
-    int speed = 10;
-    int targetBlightness = 20;
-    int blightness = 0;
-    int diff = 0;
-    int operation = 0;
-
     rgb_raw_t rgb;
     HSV hsv = {0, 0, 0};
     colorid_t color;
 
-    // 赤サークル検知までライントレース
-    while (isNotStartPosition) {
-        colorSensor.getRawColor(rgb);
-        hsv = GetHsv(rgb.r, rgb.g, rgb.b);
-        color = GetColorForHsv(hsv);
-        if (color == COLOR_RED) {
-            // 赤検知で終了
-            isNotStartPosition = false;
-            break;
+    //    // 赤サークル検知までライントレース
+    colorSensor.getRawColor(rgb);
+    hsv = GetHsv(rgb.r, rgb.g, rgb.b);
+    color = GetColorForHsv(hsv);
+    if (color == COLOR_RED) {
+        switch (circle_position_starter) {
+            case NO_DETECTION:
+                circle_position_starter = OUTER;
+                break;
+            case MIDDLE:
+                // 2回目にサークルの色を検知したら目的地到着とする
+                // 赤検知で終了
+                circle_position_starter = NO_DETECTION;
+                isNotStartPosition = false;
+                return false;
+            default:
+                break;
         }
-
-        blightness = colorSensor.getBrightness();
-        diff = blightness - targetBlightness;
-        operation = -(diff * kp); // マイナス符号を付与することで左エッジライントレースになる
-
-        walker.run(speed, operation);
-    }
-
-    isNotStartPosition = true;
-    while (isNotStartPosition) {
-        distance.update();
-        if (60 <= distance.getDistance()) {
-            isNotStartPosition = false;
-            break;
+    } else {
+        if (circle_position_starter == OUTER) {
+            circle_position_starter = MIDDLE;
         }
     }
+    walker.run(speed, pid_sample(colorSensor.getBrightness(), 20));
+    return true;
+}
+static double_t DELTA_T = 0.004;
+static double_t KP = 0.38; //1;
+static double_t KI = 0; //0;
+static double_t KD = 0; //0;
+static int32_t diff[2];
+static int32_t integral;
 
-    // 初期位置への移動終了
-    return false;
+void BlockZone::PidReset(int32_t p, int32_t i, int32_t d) {
+    KP = p;
+    KI = i;
+    KD = d;
+    diff[0] = 0.0;
+    diff[1] = 0.0;
+    integral = 0.0;
+}
+
+int32_t BlockZone::pid_sample(int32_t sensor_val, int32_t target_val) {
+    int32_t p, i, d;
+    // 右側ライントレース
+    diff[0] = diff[1];
+    diff[1] = sensor_val - target_val;
+    integral += (diff[1] + diff[0]) / 2.0 * DELTA_T;
+    p = KP * diff[1];
+    i = KI * integral;
+    d = KD * (diff[1] - diff[0]) / DELTA_T;
+    return limit_math(p + i + d);
+}
+
+bool BlockZone::MoveBlockZone() {
+    return true;
+}
+
+
+int32_t BlockZone::limit_math(int32_t num) {
+    if (num < -100) {
+        return -100;
+    } else if (100 < num) {
+        return 100;
+    } else {
+        return num;
+    }
 }
 
 HSV BlockZone::GetHsv(int r, int g, int b) {
