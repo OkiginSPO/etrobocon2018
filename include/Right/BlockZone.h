@@ -96,7 +96,7 @@ private:
 
     bool IsMove90Turn(int8_t before_x, int8_t before_y, int8_t x, int8_t y, int8_t target_x, int8_t target_y);
     int32_t pid_sample(int32_t sensor_val, int32_t target_val);
-    int32_t limit_math(int32_t num);
+    int32_t limit_math(double_t num);
     void PidReset(int32_t p, int32_t i, int32_t d);
 
 };

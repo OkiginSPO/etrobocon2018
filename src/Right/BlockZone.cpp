@@ -63,8 +63,8 @@ static double_t DELTA_T = 0.004;
 static double_t KP = 0.38; //1;
 static double_t KI = 0; //0;
 static double_t KD = 0; //0;
-static int32_t diff[2];
-static int32_t integral;
+static double_t diff[2];
+static double_t integral;
 
 void BlockZone::PidReset(int32_t p, int32_t i, int32_t d) {
     KP = p;
@@ -77,9 +77,9 @@ void BlockZone::PidReset(int32_t p, int32_t i, int32_t d) {
 
 int32_t BlockZone::pid_sample(int32_t sensor_val, int32_t target_val) {
     int32_t p, i, d;
-    double kp = 0.4;
-    double ki = 0;
-    double kd = 0;
+    double kp = 0.8;//0.4;
+    double ki = 0.02;//0;
+    double kd = 0.02;//0;
     double delta_t = 0.004;
     // 右側ライントレース
     diff[0] = diff[1];
@@ -91,13 +91,13 @@ int32_t BlockZone::pid_sample(int32_t sensor_val, int32_t target_val) {
     return limit_math(p + i + d);
 }
 
-int32_t BlockZone::limit_math(int32_t num) {
+int32_t BlockZone::limit_math(double_t num) {
     if (num < -100) {
         return -100;
     } else if (100 < num) {
         return 100;
     } else {
-        return num;
+        return (int)num;
     }
 }
 
