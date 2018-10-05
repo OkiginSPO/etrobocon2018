@@ -6,7 +6,7 @@
 #include "ColorSensorController.h"
 #include "PIDController.h"
 #include "TouchSensorController.h"
-#include "Scenario.h"
+#include "ScenarioManager.h"
 
 enum class RUN_STATE {
     AHEAD,
@@ -16,7 +16,7 @@ enum class RUN_STATE {
 class Walker_
 {
     public:
-        Walker_(Scenario *_scenario);
+        Walker_(ScenarioManager *_scenarioManager);
         ~Walker_();
         void Initialize(void);
         void WaitForStart(void);
@@ -35,7 +35,8 @@ class Walker_
         ColorSensorController *colorSensorController;
         PIDController *pidController;
         TouchSensorController *touchSensorController;
-        Scenario *scenario;
+        ScenarioManager *scenarioManager;
+        
 };
 
 #endif /* WALKER__H */

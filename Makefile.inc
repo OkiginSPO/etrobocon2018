@@ -20,9 +20,7 @@ APPL_CXXOBJS += ArmMotorController.o \
   PIDController.o \
   PIDParam.o \
   PortSettings.o \
-  Scenario.o \
-  ScenarioLcourse.o \
-  ScenarioRcourse.o \
+  ScenarioManager.o \
   Scene.o \
   SonarSensorController.o \
   TailMotorController.o \

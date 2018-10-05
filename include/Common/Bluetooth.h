@@ -18,12 +18,20 @@ class Bluetooth
   private:
     // BlockZone blockZone;
     char sendCmd;
+    bool isConnect;
+    FILE *btFile;
 
   public:
     // コンストラクタ
     Bluetooth();
+    ~Bluetooth();
+    void Open(void);
+    void Close(void);
+    void SendLog(void);
+    void SendCmd(char cmd);
+    char ReceiveCmd(void);
     // Bluetoothから値をdijkstraData可変長配列にセット
-    void fetchDijkstraData(FILE* bt, struct GRID_XY* grid_xy);
+    void fetchDijkstraData(struct GRID_XY* grid_xy);
     // dijkstraData可変長配列
     // std::vector<int8_t> dijkstraData;
     char recvData[DIJKSTRA_ARRAY_BYTE+1];

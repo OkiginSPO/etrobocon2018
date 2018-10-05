@@ -1,12 +1,49 @@
-
 #include "Bluetooth.h"
+#include "Logger.h"
 #include "stdlib.h"
+#include "LCDController.h"
 
 // コンストラクタ
 Bluetooth::Bluetooth()
 {
-  sendCmd = BLUETOOTH_SEND_CMD;
+    btFile = NULL;
+    sendCmd = BLUETOOTH_SEND_CMD;
 }
+
+Bluetooth::~Bluetooth()
+{
+
+}
+
+void Bluetooth::Open()
+{
+    btFile = ev3_serial_open_file(EV3_SERIAL_BT);
+}
+
+void Bluetooth::Close()
+{
+    fclose(btFile);
+    btFile = NULL;
+}
+
+void Bluetooth::SendLog(void)
+{
+    LOGPARAM *log = Logger.GetLog();
+    fwrite(log, sizeof(*log), 1, btFile);
+}
+
+void Bluetooth::SendCmd(char cmd)
+{
+    fwrite(&cmd, sizeof(cmd), 1, btFile);
+}
+
+int Bluetooth::ReceiveCmd(void)
+{
+    int receiveCmd = fgetc(btFile);
+    
+    return receiveCmd;
+}
+
 
 /**
  * Bluetoothの仮想シリアルにリクエストを送り、ブロック並べ計算データを受け取り、grid_xyに格納。
@@ -14,18 +51,19 @@ Bluetooth::Bluetooth()
  * @param bt 
  * @return void
  */
-void Bluetooth::fetchDijkstraData(FILE* bt, struct GRID_XY* grid_xy)
+void Bluetooth::fetchDijkstraData(struct GRID_XY* grid_xy)
 {
 
     // char ms[30]; //test用の配列
 
     // msg_f("request", 1);
-    fwrite(&sendCmd, 1, 1, bt);
+//    fwrite(&sendCmd, 1, 1, bt);
+    SendCmd('c');
 
     // tslp_tsk( 100 ); スリープすると表示されなくなる。
 
     // 文字列を取得
-    fgets(recvData, sizeof(recvData), bt);
+    fgets(recvData, sizeof(recvData), btFile);
     // msg_f("recieve success", 1);
 
     // sprintf(ms, "recvData: %s %s %s", recvData[6], recvData[7], recvData[8]);

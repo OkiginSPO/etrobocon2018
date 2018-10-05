@@ -3,11 +3,11 @@
 #include "Walker_.h"
 #include "Utility.h"
 
-Walker_::Walker_(Scenario *_scenario)
+Walker_::Walker_(ScenarioManager *_scenarioManager)
     : DELTA_T(0.004F)
     , targetBlightness(20)
     , terminated(false)
-    , scenario(_scenario)
+    , scenarioManager(_scenarioManager)
 {
 
 }
@@ -80,13 +80,13 @@ void Walker_::LineTrace(void)
     float lenc = leftWheel->GetLastAngle();
     float renc = rightWheel->GetLastAngle();
     
-    currentScene = scenario->GetCurrentScene();
+    currentScene = scenarioManager->GetCurrentScene();
     scenarioDistance = localization->GetDistance();
     
     if (scenarioDistance >= (currentScene->GetDistance() * 2.0F)) {
         bool updated = true;
         localization->Reset();
-        updated = scenario->UpdateStep();
+        updated = scenarioManager->UpdateStep();
         pidController->Reset();
         ev3_speaker_play_tone(NOTE_C4, 1000);
         
