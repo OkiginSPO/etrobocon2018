@@ -77,9 +77,9 @@ void BlockZone::PidReset(int32_t p, int32_t i, int32_t d) {
 
 int32_t BlockZone::pid_sample(int32_t sensor_val, int32_t target_val) {
     int32_t p, i, d;
-    double kp = 0.8; //0.4;
-    double ki = 1.36; //0;
-    double kd = 0.34; //0;
+    double kp = 0.4;
+    double ki = 0;
+    double kd = 0;
     double delta_t = 0.004;
     // 右側ライントレース
     diff[0] = diff[1];
