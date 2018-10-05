@@ -83,6 +83,8 @@ extern "C" {
 
 extern void tracer_task(intptr_t unused);
 extern void tracer_cyc(intptr_t exinf);
+extern void block_task(intptr_t unused);
+extern void block_cyc(intptr_t exinf);
 extern void main_task(intptr_t exinf);
 extern void bt_task(intptr_t exinf);
 

@@ -1,7 +1,7 @@
 #include "Grid.h"
 #include "math.h"
 
-//static float GRID_SIZE = 150.0; //450.0; //座標のマス幅（100mm）
+//static float GRID_SIZE = 200.0; //450.0; //座標のマス幅（100mm）
 
 // 角度の算出に利用(両方200のときは正方形と仮定してのこと。本来は長方形であるべき)
 // TODO: pid制御のテスト用にGRIDXYの値をいじってます
