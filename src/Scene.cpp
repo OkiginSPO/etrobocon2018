@@ -8,10 +8,12 @@ Scene::Scene()
     
 }
 
-Scene::Scene(float p, float i, float d, int _forward, float _distance)
+Scene::Scene(float p, float i, float d, int _forward, float _distance, GOAL_TYPE _goalType, colorid_t _colorID)
     : pid(new PIDParam(p, i, d))
     , forward(_forward)
     , distance(_distance)
+    , goalType(_goalType)
+    , colorID(_colorID)
 {
     
 }

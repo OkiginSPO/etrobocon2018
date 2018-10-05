@@ -8,9 +8,16 @@
 
 #include "ev3api.h"
 #include "app.h"
-#include "TestLineTrace.h"
+#include "Walker_.h"
+#include "ScenarioManager.h"
+#include "include/Common/Bluetooth.h"
 #include "include/Right/BlockZone.h"
 #include "include/Right/PerpendicularParking.h"
+
+#define DEVELOP
+//#define PRODUCT
+#define R_COURSE
+//#define L_COURSE
 
 #define DEBUG
 #ifdef DEBUG
@@ -19,23 +26,22 @@
 #define _debug(x)
 #endif
 
-/* Bluetooth */
-static int32_t bt_cmd = 0; // Bluetooth コマンド 1:リモートスタート
-static FILE *bt = NULL; // Bluetooth ファイルハンドル
-static TestLineTrace *lineTrace;
+static Bluetooth *bluetooth;
+static Walker_ *walker;
+static ScenarioManager *scenarioManager;
 static BlockZone *blockZone;
 static PerpendicularParking *perpendicularParking;
 
 void tracer_cyc(intptr_t unused) {
+    if (walker->Terminated()) {
+        wup_tsk(MAIN_TASK);
+    } else {
+        walker->LineTrace();
+    }
     act_tsk(TRACER_TASK);
 }
 
 void tracer_task(intptr_t unused) {
-    if (lineTrace->Terminated()) {
-        wup_tsk(MAIN_TASK);
-    } else {
-        lineTrace->TestRun();
-    }
     ext_tsk();
 }
 
@@ -61,20 +67,68 @@ void block_task(intptr_t unused) {
     }
 }
 
+void sendlog_cyc(intptr_t unused) {
+    act_tsk(SENDLOG_TASK);
+}
+
+void sendlog_task(intptr_t exinf) {
+    bluetooth->SendLog();
+    ext_tsk();
+}
+
+void receivecmd_cyc(intptr_t unused) {
+    act_tsk(RECEIVECMD_TASK);
+}
+
+void receivecmd_task(intptr_t exinf) {
+    int receiveCmd = bluetooth->ReceiveCmd();
+    
+    switch(receiveCmd) {
+        case 'q':
+            // 強制停止
+            break;
+        default:
+            break;
+    }
+    
+    ext_tsk();
+}
+
 /* メインタスク */
 void main_task(intptr_t unused) {
-//    lineTrace = new TestLineTrace();
-//    lineTrace->Initialize();
-//
-//    tslp_tsk(100);
-//
-//    lineTrace->WaitForStart();
-//
-//    ev3_sta_cyc(TRACER_CYC);
-//
-//    slp_tsk();
-//
-//    ev3_stp_cyc(TRACER_CYC);
+    
+    bluetooth = new Bluetooth();
+    bluetooth->Open();
+    
+    tslp_tsk(100);
+    
+#ifdef DEVELOP
+    ev3_sta_cyc(SENDLOG_CYC);
+    ev3_sta_cyc(RECEIVECMD_CYC);
+#endif
+    
+#ifdef R_COURSE
+    scenarioManager = new ScenarioManager(12);
+    scenarioManager->CreateRcourse();
+#endif
+    
+#ifdef L_COURSE
+    scenarioManager = new ScenarioManager(12);
+    scenarioManager->CreateLcourse();
+#endif
+    
+    walker = new Walker_(scenarioManager);
+    walker->Initialize();
+    
+    tslp_tsk(100);
+    
+    walker->WaitForStart();
+    
+    ev3_sta_cyc(TRACER_CYC);
+    
+    slp_tsk();
+    
+    ev3_stp_cyc(TRACER_CYC);
 
     // ブロック並べ
     blockZone = new BlockZone();
@@ -98,27 +152,13 @@ void main_task(intptr_t unused) {
 
     //  ter_tsk(BT_TASK);
     //  fclose(bt);
+    
+    Bluetooth->Close();
+    
+#ifdef DEVELOP
+    ev3_stp_cyc(SENDLOG_CYC);
+    ev3_stp_cyc(RECEIVECMD_CYC);
+#endif
 
     ext_tsk();
 }
-
-/*
- * 関数名: bt_task
- * 引数: unused
- * 返り値: なし
- * 概要: Bluetooth 通信によるリモートスタート。ASCIIコードで 1 を受信するとリモートスタートする。
- */
-void bt_task(intptr_t unused) {
-    while (1) {
-        uint8_t c = fgetc(bt); // 受信
-        switch (c) {
-            case '1':
-                bt_cmd = 1;
-                break;
-            default:
-                break;
-        }
-        fputc(c, bt); // エコーバック
-    }
-}
-
