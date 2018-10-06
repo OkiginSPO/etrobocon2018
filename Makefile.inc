@@ -45,7 +45,8 @@ APPL_CXXOBJS += ArmMotorController.o \
   BlockZone.o \
   TurnControl.o \
   Pid.o \
-  SpeedControl.o
+  SpeedControl.o \
+  PerpendicularParking.o 
 
 SRCLANG := c++
 

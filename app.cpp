@@ -76,9 +76,14 @@ void main_task(intptr_t unused) {
 //
 //    ev3_stp_cyc(TRACER_CYC);
 
+    /* Open Bluetooth file */
+     bt = ev3_serial_open_file(EV3_SERIAL_BT);
+     assert(bt != NULL);
+     
     // ブロック並べ
     blockZone = new BlockZone();
     //        blockZone->start();
+    blockZone->prepareMoveData(bt);
     tslp_tsk(100);
     ev3_sta_cyc(BLOCK_CYC);
     slp_tsk();
@@ -89,9 +94,6 @@ void main_task(intptr_t unused) {
     perpendicularParking->runParking();
     slp_tsk();
 
-    /* Open Bluetooth file */
-    //  bt = ev3_serial_open_file(EV3_SERIAL_BT);
-    //  assert(bt != NULL);
 
     /* Bluetooth 通信タスクの軌道 */
     //  act_tsk(BT_TASK);

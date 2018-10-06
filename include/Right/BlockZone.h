@@ -60,7 +60,7 @@ public:
     //     int order;
     // };
 
-    //    struct GRID_XY grid_xy[70];
+    struct GRID_XY target_grid[100];
 private:
     // Bluetooth bluetooth;
     Walker walker;

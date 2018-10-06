@@ -47,24 +47,24 @@ static colorid_t color;
 //    {2, 5, 0},
 //    {2, 6, 98}
 //};
-static GRID_XY target_grid[100] = {
-    //    {2, 0, 0},
-    {2, 1, 0},
-    {2, 2, 0},
-    {2, 1, 99},
-    {2, 0, 0},
-    {3, 0, 0},
-    {4, 0, 0},
-    {4, 1, 0},
-    {4, 2, 0},
-    {4, 3, 0},
-    {4, 4, 0},
-    {4, 5, 0},
-    {4, 6, 0},
-    {4, 5, 99},
-    {3, 6, 0},
-    {2, 6, 98}
-};
+// static GRID_XY target_grid[100] = {
+//     //    {2, 0, 0},
+//     {2, 1, 0},
+//     {2, 2, 0},
+//     {2, 1, 99},
+//     {2, 0, 0},
+//     {3, 0, 0},
+//     {4, 0, 0},
+//     {4, 1, 0},
+//     {4, 2, 0},
+//     {4, 3, 0},
+//     {4, 4, 0},
+//     {4, 5, 0},
+//     {4, 6, 0},
+//     {4, 5, 99},
+//     {3, 6, 0},
+//     {2, 6, 98}
+// };
 
 static char msg[128];
 static int cur_gridX = 2; // 現在位置座標のX値 // 20スタート
@@ -141,7 +141,7 @@ sl(walker.getCountL(), walker.getCountR(), false) {
 
 void BlockZone::prepareMoveData(FILE* bt) {
     Bluetooth bluetooth;
-    //    bluetooth.fetchDijkstraData(bt, grid_xy);
+    bluetooth.fetchDijkstraData(bt, target_grid);
 }
 
 BLOCKZONE_STATE BlockZone::GetBlockZoneState() {
