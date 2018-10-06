@@ -153,7 +153,7 @@ void main_task(intptr_t unused) {
     //  ter_tsk(BT_TASK);
     //  fclose(bt);
     
-    Bluetooth->Close();
+    bluetooth->Close();
     
 #ifdef DEVELOP
     ev3_stp_cyc(SENDLOG_CYC);

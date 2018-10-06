@@ -28,7 +28,7 @@ void Bluetooth::Close()
 
 void Bluetooth::SendLog(void)
 {
-    LOGPARAM *log = Logger.GetLog();
+    LOGPARAM *log = Logger::GetLog();
     fwrite(log, sizeof(*log), 1, btFile);
 }
 

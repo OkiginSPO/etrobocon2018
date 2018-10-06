@@ -29,7 +29,7 @@ class Bluetooth
     void Close(void);
     void SendLog(void);
     void SendCmd(char cmd);
-    char ReceiveCmd(void);
+    int ReceiveCmd(void);
     // Bluetoothから値をdijkstraData可変長配列にセット
     void fetchDijkstraData(struct GRID_XY* grid_xy);
     // dijkstraData可変長配列

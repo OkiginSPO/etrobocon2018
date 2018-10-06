@@ -1,6 +1,7 @@
 #ifndef SCENE_H
 #define SCENE_H
 
+#include "ev3api.h"
 #include "PIDParam.h"
 
 enum GOAL_TYPE

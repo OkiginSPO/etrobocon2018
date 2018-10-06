@@ -29,7 +29,6 @@ APPL_CXXOBJS += ArmMotorController.o \
   WalkerParam.o \
   Walker_.o \
   Localization.o \
-  TestLineTrace.o \
   LCDController.o \
   Logger.o \
   Bluetooth.o \
@@ -43,7 +42,8 @@ APPL_CXXOBJS += ArmMotorController.o \
   BlockZone.o \
   TurnControl.o \
   Pid.o \
-  SpeedControl.o
+  SpeedControl.o \
+  ParpendicularParking.o
 
 SRCLANG := c++
 
