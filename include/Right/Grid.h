@@ -16,6 +16,7 @@ public:
 void init();
 /* 座標aから座標bまでの移動距離を設定する関数 */
 void setDistance(int aX, int aY, int bX, int bY);
+void setDistance(float distance);
 /* 座標aから座標bまでの移動距離を取得する関数 */
 float getDistance();
 
@@ -27,6 +28,7 @@ void setDirection(float direction);
 float CalcDirection(int aX, int aY, int bX, int bY);
 /* 目標座標の方位を取得する関数 */
 float getDirection();
+float CalcDistance(int aX, int aY, int bX, int bY);
 
 private:
     

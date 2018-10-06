@@ -91,8 +91,9 @@ private:
     bool IsGoToLine(int8_t x, int8_t y, int8_t target_x, int8_t target_y);
 
     // 目的地までの経路がライン上かチェック
-    bool IsMoveLines(int8_t x, int8_t y, int8_t target_x, int8_t target_y);
+    bool IsOneTheLine(int8_t x, int8_t y, int8_t target_x, int8_t target_y);
 
+    bool IsOneEigty(int8_t beforeTo2_x, int8_t beforeTo2_y, int8_t before_x, int8_t before_y, int8_t before_order, int8_t target_x, int8_t target_y);
 
     bool IsMove90Turn(int8_t before_x, int8_t before_y, int8_t x, int8_t y, int8_t target_x, int8_t target_y);
     int32_t pid_sample(int32_t sensor_val, int32_t target_val);

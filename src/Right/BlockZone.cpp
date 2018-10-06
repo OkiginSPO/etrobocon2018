@@ -28,15 +28,41 @@ static RUN_STATE state = TURN;
 static RUN_STATE before_state = TURN;
 static colorid_t color;
 
+//                [現実]                  //                [理想]
+// [6,0][6,1][6,2][6,3][6,4][6,5][6,6]   // [0,6][1,6][2,6][3,6][4,6][5,6][6,6]
+// [5,0][5,1][5,2][5,3][5,4][5,5][5,6]   // [0,5][1,5][2,5][3,5][4,5][5,5][6,5]
+// [4,0][4,1][4,2][4,3][4,4][4,5][4,6]   // [0,4][1,4][2,4][3,4][4,4][5,4][6,4]
+// [3,0][3,1][3,2][3,3][3,4][3,5][3,6]   // [0,3][1,3][2,3][3,3][4,3][5,3][6,3]
+// [2,0][2,1][2,2][2,3][2,4][2,5][2,6]   // [0,2][1,2][2,2][3,2][4,2][5,2][6,2]
+// [1,0][1,1][1,2][1,3][1,4][1,5][1,6]   // [0,1][1,1][2,1][3,1][4,1][5,1][6,1]
+// [0,0][0,1][0,2][0,3][0,4][0,5][0,6]   // [0,0][1,0][2,0][3,0][4,0][5,0][6,0]
+//static GRID_XY target_grid[100] = {
+//    //    {2, 0, 0},
+//    {2, 1, 0},
+//    {2, 2, 0},
+//    {2, 3, 0},
+//    {2, 4, 0},
+//    {2, 3, 99},
+//    {1, 4, 0},
+//    {2, 5, 0},
+//    {2, 6, 98}
+//};
 static GRID_XY target_grid[100] = {
     //    {2, 0, 0},
     {2, 1, 0},
     {2, 2, 0},
-    {2, 3, 0},
-    {2, 4, 0},
-    {2, 3, 99},
-    {1, 4, 0},
-    {2, 5, 0},
+    {2, 1, 99},
+    {2, 0, 0},
+    {3, 0, 0},
+    {4, 0, 0},
+    {4, 1, 0},
+    {4, 2, 0},
+    {4, 3, 0},
+    {4, 4, 0},
+    {4, 5, 0},
+    {4, 6, 0},
+    {4, 5, 99},
+    {3, 6, 0},
     {2, 6, 98}
 };
 
@@ -50,6 +76,7 @@ static float cur_dir = 0.0; // 方位計の現在地
 static int grid_count = 0; // 目標座標構造体への参照カウンタ
 static bool isDestinationArrival = false;
 static int right_drive = -1; // プラス：右エッジ　マイナス：左エッジ 初期値左エッジ
+static int right_turn = -1; // プラス：右ターン　マイナス：左ターン　初期値左ターン(意味はない)
 static int speed = 10; // 前進時のpwm値
 static int pidTurnValue = 0;
 static rgb_raw_t rgb;
@@ -77,9 +104,11 @@ void BlockZone::PidReset(int32_t p, int32_t i, int32_t d) {
 
 int32_t BlockZone::pid_sample(int32_t sensor_val, int32_t target_val) {
     int32_t p, i, d;
-    double kp = 0.8;//0.4;
-    double ki = 0.02;//0;
-    double kd = 0.02;//0;
+    // TODO: PID値をある程度決定するまっすぐすすみたい！！！！！！！！！！！！！！
+    // p = 0.6, i = 0, d = 0.008 →ほぼまっすぐ！！
+    double kp = 0.6; //0.4;
+    double ki = 0.0; //0;
+    double kd = 0.008; //0;
     double delta_t = 0.004;
     // 右側ライントレース
     diff[0] = diff[1];
@@ -97,7 +126,7 @@ int32_t BlockZone::limit_math(double_t num) {
     } else if (100 < num) {
         return 100;
     } else {
-        return (int)num;
+        return (int) num;
     }
 }
 
@@ -154,7 +183,7 @@ bool BlockZone::MovingStartPosition() {
         walker.run(speed, my_turn);
     } else {
         if (before_circle_position != circle_position) {
-            ev3_speaker_play_tone(NOTE_AS4, 200);
+            ev3_speaker_play_tone(NOTE_AS4, 1);
             walker.stop();
             before_circle_position = circle_position;
         }
@@ -219,6 +248,7 @@ bool BlockZone::MoveBlockZone() {
             // ッターン！
         case TURN:
 
+
             if ((abs(target_dir - cur_dir) < 2.0)) {
                 // 90度ターンの際には、黒ライン検知でもターン終了判定を行う
                 if ((2 <= grid_count)
@@ -240,11 +270,63 @@ bool BlockZone::MoveBlockZone() {
                 }
             }
 
-            if (cur_dir >= target_dir) {
-                walker.run(0, 10);
+
+            if (target_grid[grid_count].order == 99) {
+                // バック時はエッジ側に回転する
+                if (cur_dir <= target_dir) {
+                    // 右回り
+                    walker.run(0, 10);
+                } else {
+                    // 左回り
+                    walker.run(0, -10);
+                }
             } else {
-                walker.run(0, -10);
+                if (target_dir <= cur_dir) {
+                    // 右回り
+                    walker.run(0, 10);
+                } else {
+                    // 左回り
+                    walker.run(0, -10);
+                }
             }
+
+            //            if ((2 <= grid_count)
+            //                    && IsOneEigty(target_grid[grid_count - 2].gridX, target_grid[grid_count - 2].gridY, target_grid[grid_count - 1].gridX, target_grid[grid_count - 1].gridY, target_grid[grid_count - 1].order, target_grid[grid_count].gridX, target_grid[grid_count].gridY)) {
+            //                // 180度回転の場合は、必ず黒線検知でのみMOVEへ移行する    
+            //                if ((fabs(cur_dir - target_dir) < 40) &&(color == COLOR_BLACK)) {
+            //                    state = MOVE;
+            //                    turnControl = new TurnControl();
+            //                    break;
+            //                }
+            //            } else {
+            //                ev3_speaker_play_tone(NOTE_AS4, 2);
+            //                if ((2 <= grid_count)
+            //                        && (IsMove90Turn(target_grid[grid_count - 2].gridX, target_grid[grid_count - 2].gridY, target_grid[grid_count - 1].gridX, target_grid[grid_count - 1].gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY))
+            //                        && (color = COLOR_BLACK)) {
+            //                    // 90度回転の場合は、黒線検知でもMOVEへ移行できる(回転過剰を防ぐ))
+            //                    state = MOVE;
+            //                    turnControl = new TurnControl();
+            //                    break;
+            //                } else {
+            //                    // 通常時は、角度がきたらMOVEへへ移行する
+            //                    if (fabs(target_dir - cur_dir) < 1.0) {
+            //                        state = MOVE;
+            //                        turnControl = new TurnControl();
+            //                        // TODO: PIDリセットするかを検証する
+            //                        break;
+            //                    }
+            //                }
+            //            }
+            //            if ((2 <= grid_count)
+            //                    && IsOneEigty(target_grid[grid_count - 2].gridX, target_grid[grid_count - 2].gridY, target_grid[grid_count - 1].gridX, target_grid[grid_count - 1].gridY, target_grid[grid_count - 1].order, target_grid[grid_count].gridX, target_grid[grid_count].gridY)) {
+            //                walker.run(0, (0 < right_turn) ? -10 : 10);
+            //            } else {
+            //                if (cur_dir >= target_dir) {
+            //                    walker.run(0, 10);
+            //                } else {
+            //                    walker.run(0, -10);
+            //                }
+            //            }
 
             break;
         case MOVE:
@@ -295,11 +377,11 @@ bool BlockZone::MoveBlockZone() {
 
                 // 指定位置までたどり着いたら状態遷移
                 if (isDestinationArrival) {
-                    ev3_speaker_play_tone(NOTE_A6, 200);
+                    ev3_speaker_play_tone(NOTE_A6, 1);
 
                     // 最後の移動が完了したらENDへ移行
                     if (target_grid[grid_count].order == 98) {
-                        ev3_speaker_play_tone(NOTE_FS4, 100);
+                        ev3_speaker_play_tone(NOTE_FS4, 1);
                         cur_gridX = target_grid[grid_count].gridX;
                         cur_gridY = target_grid[grid_count].gridY;
 
@@ -332,30 +414,33 @@ bool BlockZone::MoveBlockZone() {
                     // 次の座標までの方位、距離を格納する
                     grid_count++;
                     /** 通常ルート:次の進行方向へ回転するため、現在座標情報・目標座標を格納する **/
-                    if (target_grid[grid_count].order == 98) {
-                        ev3_speaker_play_tone(NOTE_DS5, 200);
-                    }
 
                     int beforeDir = target_dir;
 
-                    if (target_grid[grid_count].order == 99) {
-                        // 後退時には距離調整する -> 6cm距離を縮める
-                        grid.setDirection(grid.CalcDirection(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY) - 60);
-                    } else {
-                        grid.setDistance(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY);
-                    }
+                    grid.setDistance(grid.CalcDistance(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY) - 25.0);
                     grid.setDirection(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY);
                     target_dis = grid.getDistance();
                     target_dir = grid.getDirection();
 
+
+                    // ライントレースのエッジと初めの回転向きを決定する
                     if ((fabs(beforeDir) - fabs(target_dir)) < 4) {
-                        // 無視できる範囲
+                        // 直進時->エッジそのまま
+                        // 後退時->エッジ反転
+                        right_drive = (target_grid[grid_count].order == 99) ? -right_drive : right_drive;
+                        right_turn = right_drive;
+                    } else if ((2 <= grid_count)
+                            &&(IsOneEigty(target_grid[grid_count - 2].gridX, target_grid[grid_count - 2].gridY, target_grid[grid_count - 1].gridX, target_grid[grid_count - 1].gridY, target_grid[grid_count - 1].order, target_grid[grid_count].gridX, target_grid[grid_count].gridY))) {
+                        // 180度回転のときはエッジを反転する(回転角度が大きくなりすぎるため)
                         right_drive = right_drive;
+                        right_turn = right_drive;
                     } else {
                         if (beforeDir < target_dir) {
                             right_drive = -1;
+                            right_turn = right_drive;
                         } else {
                             right_drive = 1;
+                            right_turn = right_drive;
                         }
                     }
 
@@ -378,11 +463,10 @@ bool BlockZone::MoveBlockZone() {
                     walker.run(speed, 0);
                 } else {
                     if (circle_position == NO_DETECTION) {
-                        ev3_speaker_play_tone(NOTE_AS4, 1);
                         turn = pidTurnValue;
                     } else {
                         if (before_circle_position != circle_position) {
-                            ev3_speaker_play_tone(NOTE_AS4, 200);
+                            ev3_speaker_play_tone(NOTE_AS4, 1);
                             walker.stop();
                             before_circle_position = circle_position;
                         }
@@ -407,8 +491,9 @@ bool BlockZone::MoveBlockZone() {
                     direction.setDirection(grid.CalcDirection(target_grid[grid_count - 2].gridX, target_grid[grid_count - 2].gridY, target_grid[grid_count - 1].gridX, target_grid[grid_count - 1].gridY));
 
                     grid_count++;
+
                     //次の進行方向へ回転するため、現在座標情報・目標座標を格納する
-                    grid.setDistance(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY);
+                    grid.setDistance(grid.CalcDistance(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY) - 25.0);
                     grid.setDirection(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY);
                     target_dis = grid.getDistance();
                     target_dir = grid.getDirection();
@@ -448,6 +533,7 @@ bool BlockZone::MoveBlockZone() {
     color = GetColorForHsv(hsv);
 
     // 処理継続
+
     return true;
 }
 
@@ -508,6 +594,7 @@ colorid_t BlockZone::GetColorForHsv(HSV _hsv) {
     }
 
     if (_hsv.value < 20) {
+
         return COLOR_BLACK;
     }
 
@@ -521,6 +608,7 @@ colorid_t BlockZone::GetColorForRgb(rgb_raw_t rgb) {
     } else if ((rgb.r < 30) && (rgb.g < 30) && (rgb.b < 30)) {
         color = COLOR_BLACK;
     } else {
+
         color = COLOR_NONE;
     }
     return color;
@@ -533,6 +621,7 @@ colorid_t BlockZone::GetColorForRgb(rgb_raw_t rgb) {
  * @return サークルのある座標ならtrue
  */
 bool BlockZone::IsGoToCircle(int8_t x, int8_t y) {
+
     return (x % 2 == 0) && (y % 2 == 0);
 }
 
@@ -545,13 +634,29 @@ bool BlockZone::IsGoToCircle(int8_t x, int8_t y) {
  * @return 斜め移動判定であればtrue
  */
 bool BlockZone::IsGoToLine(int8_t x, int8_t y, int8_t target_x, int8_t target_y) {
+
     return (x != target_x) && (y != target_y);
 }
 
-bool BlockZone::IsMoveLines(int8_t x, int8_t y, int8_t target_x, int8_t target_y) {
+// ライン上を動きます
+
+bool BlockZone::IsOneTheLine(int8_t x, int8_t y, int8_t target_x, int8_t target_y) {
+
     return (x != target_x) ^ (y != target_y); // 排他的論理和
 }
 
 bool BlockZone::IsMove90Turn(int8_t before_x, int8_t before_y, int8_t x, int8_t y, int8_t target_x, int8_t target_y) {
+
     return ((x != target_x) ^ (y != target_y))&& ((x != before_x) ^ (y != before_y));
+}
+
+// 180度回転
+
+bool BlockZone::IsOneEigty(int8_t beforeTo2_x, int8_t beforeTo2_y, int8_t before_x, int8_t before_y, int8_t before_order, int8_t target_x, int8_t target_y) {
+    if (before_order == 99) {
+        if ((beforeTo2_x != target_x) ^ (beforeTo2_y != target_y)) {
+            return (beforeTo2_x == before_x == target_x) || (beforeTo2_y == before_y == target_y);
+        }
+    }
+    return false;
 }

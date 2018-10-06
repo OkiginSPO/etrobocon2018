@@ -4,9 +4,9 @@
 //static float GRID_SIZE = 200.0; //450.0; //座標のマス幅（100mm）
 
 // 角度の算出に利用(両方200のときは正方形と仮定してのこと。本来は長方形であるべき)
-// TODO: pid制御のテスト用にGRIDXYの値をいじってます
-static float GRID_X = 225.0; // 開発部の床が50cm  225.0; // 横(45cm) その中間点をとって22.5
-static float GRID_Y = 200.0; // 開発部の床が50cm   200.0; // 縦(40cm) その中間点をとって20.0
+// TODO: 黒ラインの長さとGRIDの縦横の長さ違うため要注意
+static float GRID_X = 225.0; //175.0;// 225.0; // 横(45cm) 但し黒ラインは35cm(両端のサークル分(45cm - (5cm x 2) = 35cm)抜く)
+static float GRID_Y = 200.0; //150.0;//200.0; // 縦(40cm) 但し黒ラインは30cm(両端のサークル分(40cm - (5cm x 2) = 30cm)抜く)
 
 static float grid_distance = 0.0; //現在座標から目標座標までの距離
 static float grid_direction = 0.0; //現在座標から目標座標の方位
@@ -20,8 +20,17 @@ void Grid::init() {
 /* 座標aから座標bまでの移動距離を設定する関数 */
 void Grid::setDistance(int aX, int aY, int bX, int bY) {
     //       長方形に対応
-    grid_distance = sqrt(pow((float)(bY - aY) * GRID_Y ,2) + pow((float)(bX - aX) * GRID_X,2));
-//    grid_distance = sqrt(pow((float) (bY - aY), 2) + pow((float) (bX - aX), 2)) * GRID_SIZE;
+    grid_distance = CalcDistance(aX, aY, bX, bY);
+    //    grid_distance = sqrt(pow((float)(bY - aY) * GRID_Y ,2) + pow((float)(bX - aX) * GRID_X,2));
+    //    grid_distance = sqrt(pow((float) (bY - aY), 2) + pow((float) (bX - aX), 2)) * GRID_SIZE;
+}
+
+void Grid::setDistance(float distance) {
+    grid_distance = distance;
+}
+
+float Grid::CalcDistance(int aX, int aY, int bX, int bY) {
+    return sqrt(pow((float) (bY - aY) * GRID_Y, 2) + pow((float) (bX - aX) * GRID_X, 2));
 }
 
 /* 座標aから座標bまでの移動距離を取得する関数 */
@@ -35,13 +44,13 @@ void Grid::setDirection(int aX, int aY, int bX, int bY) {
 }
 
 float Grid::CalcDirection(int aX, int aY, int bX, int bY) {
-    float targetDir = 0.0;// 目標方位
+    float targetDir = 0.0; // 目標方位
 
     //　座標aから座標bへの方位（ラジアン）を取得
-    targetDir = atan2((float)(bY-aY) * GRID_Y, (float)(bX-aX) * GRID_X);
-//    targetDir = atan2((float)(bY-aY), (float)(bX-aX));
+    targetDir = atan2((float) (bY - aY) * GRID_Y, (float) (bX - aX) * GRID_X);
+    //    targetDir = atan2((float)(bY-aY), (float)(bX-aX));
     //ラジアンから度に変換
-    targetDir = targetDir * 180.0 /  3.14159265359;
+    targetDir = targetDir * 180.0 / 3.14159265359;
 
     return targetDir;
 }
