@@ -3,6 +3,9 @@
 #include "Walker_.h"
 #include "Utility.h"
 
+#define COURSE_R
+//#define COURSE_L
+
 Walker_::Walker_(Scenario *_scenario)
     : DELTA_T(0.004F)
     , targetBlightness(20)
@@ -58,8 +61,17 @@ void Walker_::RunOnOff(void)
     localization->UpdateDistance();
     
     float distance = localization->GetDistance();
+    float targetDis = 0.0F;
     
-    if (distance <= (6092.2 * 2.0F)) {
+#ifdef COURSE_R
+    targetDis = 6092.2F * 2.0F;
+#endif
+
+#ifdef COURSE_L
+    targetDis = 4092.0F * 2.0F;
+#endif
+    
+    if (distance <= targetDis) {
         leftWheel->Run(pwmL);
         rightWheel->Run(pwmR);
     } else {
