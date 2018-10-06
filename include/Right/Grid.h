@@ -29,7 +29,7 @@ float CalcDirection(int aX, int aY, int bX, int bY);
 /* 目標座標の方位を取得する関数 */
 float getDirection();
 float CalcDistance(int aX, int aY, int bX, int bY);
-
+float CalcDirectionNew(int aX, int aY, int bX, int bY);
 private:
     
 };

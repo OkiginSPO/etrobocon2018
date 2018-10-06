@@ -395,7 +395,12 @@ bool BlockZone::MoveBlockZone() {
                         /** 通常ルート:次の進行方向へ回転するため、現在座標情報・目標座標を格納する **/
                         GRID_XY last_target = {2, 7, 0};
                         grid.setDistance(cur_gridX, cur_gridY, last_target.gridX, last_target.gridY);
+                        if(IsGoToLine(cur_gridX, cur_gridY, target_grid[grid_count].gridX, target_grid[grid_count].gridY)) {
                         grid.setDirection(cur_gridX, cur_gridY, last_target.gridX, last_target.gridY);
+                            
+                        }else {
+                        grid.setDirection(cur_gridX, cur_gridY, last_target.gridX, last_target.gridY);
+                        }
                         target_dis = grid.getDistance();
                         target_dir = grid.getDirection();
 

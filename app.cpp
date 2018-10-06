@@ -63,23 +63,23 @@ void block_task(intptr_t unused) {
 
 /* メインタスク */
 void main_task(intptr_t unused) {
-//    lineTrace = new TestLineTrace();
-//    lineTrace->Initialize();
-//
-//    tslp_tsk(100);
-//
-//    lineTrace->WaitForStart();
-//
-//    ev3_sta_cyc(TRACER_CYC);
-//
-//    slp_tsk();
-//
-//    ev3_stp_cyc(TRACER_CYC);
+   lineTrace = new TestLineTrace();
+   lineTrace->Initialize();
+
+   tslp_tsk(100);
+
+   lineTrace->WaitForStart();
+
+   ev3_sta_cyc(TRACER_CYC);
+
+   slp_tsk();
+
+   ev3_stp_cyc(TRACER_CYC);
 
     /* Open Bluetooth file */
      bt = ev3_serial_open_file(EV3_SERIAL_BT);
      assert(bt != NULL);
-     
+
     // ブロック並べ
     blockZone = new BlockZone();
     //        blockZone->start();
