@@ -142,16 +142,6 @@ void main_task(intptr_t unused) {
     perpendicularParking = new PerpendicularParking();
     perpendicularParking->runParking();
     slp_tsk();
-
-    /* Open Bluetooth file */
-    //  bt = ev3_serial_open_file(EV3_SERIAL_BT);
-    //  assert(bt != NULL);
-
-    /* Bluetooth 通信タスクの軌道 */
-    //  act_tsk(BT_TASK);
-
-    //  ter_tsk(BT_TASK);
-    //  fclose(bt);
     
     bluetooth->Close();
     
