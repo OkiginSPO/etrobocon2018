@@ -60,7 +60,7 @@ float Grid::CalcDirectionNew(int aX, int aY, int bX, int bY) {
     float targetDir = 0.0; // 目標方位
 
     //　座標aから座標bへの方位（ラジアン）を取得
-    targetDir = atan2((float) (bX - aX) * GRID_X, (float)(bY - aY) * GRID_Y);
+    targetDir = atan2((float) (bY - aY) * GRID_X, (float) (bX - aX) * GRID_Y);
     //    targetDir = atan2((float)(bY-aY), (float)(bX-aX));
     //ラジアンから度に変換
     targetDir = targetDir * 180.0 / 3.14159265359;
